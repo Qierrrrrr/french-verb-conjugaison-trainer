@@ -1,4 +1,9 @@
-
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>法语动词变位训练器</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -31,7 +36,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .accent-bar{gap:3px;padding:6px}
 .accent-btn{font-size:14px;padding:8px;min-width:36px;min-height:36px}
 .participle-input{font-size:16px}
-.hist-top{flex-direction:column;align-items:flex-start;gap:4px}
+.hist-top{flex-direction:column;align-items:center;gap:4px;text-align:center}
 .hist-score{font-size:16px}
 }
 .header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
@@ -53,14 +58,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .result-actions{display:flex;gap:10px;justify-content:center;margin-top:1rem}
 
 .tense-grid{display:flex;flex-wrap:wrap;gap:6px}
-.tense-chip{font-size:12px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s;user-select:none}
-.tense-chip.on{background:var(--c3);border-color:var(--c3);color:#fff}
+.verb-grid{display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow-y:auto}
+.section-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.select-all-btn{font-size:12px;padding:4px 10px;background:transparent;border:1px solid var(--c3);color:var(--c3);border-radius:6px;cursor:pointer;transition:all .2s}
+.select-all-btn:hover{background:var(--c3);color:#fff}
+.mode-grid{display:flex;gap:6px;margin-top:.5rem}
+.mode-chip{flex:1;padding:8px;text-align:center;font-size:13px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);color:var(--muted);transition:all .2s}
+.mode-chip.on{background:var(--c3);color:#fff;border-color:var(--c3)}
+.mode-config{margin-top:.5rem;padding:.5rem;background:var(--light);border-radius:8px;font-size:13px;color:var(--muted)}
+.tense-chip{font-size:12px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s;user-select:none;min-width:60px;text-align:center}
+.tense-chip.on{border-color:var(--c3);color:var(--c3);font-weight:bold}
 
 .start-btn{width:100%;padding:14px;background:var(--c3);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.02em}
 .start-btn:hover{background:var(--acc);transform:translateY(-1px)}
 
 .progress-bar{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--c3),var(--acc));border-radius:4px;transition:width .4s ease}
+.timer-row{display:flex;align-items:center;gap:8px;margin-bottom:1rem;opacity:0}
+.timer-row.active{opacity:1}
+.timer-text{font-size:12px;color:var(--muted);min-width:32px}
+.timer-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.timer-fill{height:100%;background:linear-gradient(90deg,var(--c3),var(--acc));width:100%;transition:width .1s linear}
 .progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:.5rem}
 
 .question-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
@@ -69,15 +87,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .tense-badge{display:inline-block;background:var(--c3);color:#fff;font-size:11px;padding:3px 12px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-top:.4rem}
 
 .person-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.person-row{display:flex;align-items:center;gap:8px;background:var(--light);border-radius:10px;padding:8px 10px}
-.person-label{font-size:12px;font-weight:500;color:var(--muted);min-width:36px;letter-spacing:.04em;text-transform:uppercase}
-.person-input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--c1);outline:none}
+.person-row{display:flex;align-items:center;gap:8px;background:var(--light);border-radius:10px;padding:8px 10px;flex-wrap:nowrap}
+.person-label{font-size:12px;font-weight:500;color:var(--muted);min-width:50px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
+.person-input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--c1);outline:none;min-width:0}
+.person-input::placeholder{color:var(--light);font-size:18px;opacity:1}
 .person-input::placeholder{color:#bbb}
 .person-row.correct{background:#f0faf5;border:1px solid #b7dfd0}
 .person-row.wrong{background:#fff5f5;border:1px solid #f5c0c0}
 .person-row.correct .person-label{color:var(--green)}
 .person-row.wrong .person-label{color:var(--red)}
-.answer-hint{font-size:12px;color:var(--green);margin-top:2px;display:none}
+.answer-hint{font-size:11px;color:var(--red);display:none}
 .person-row.wrong .answer-hint{display:block;color:var(--red)}
 
 .action-row{display:flex;gap:10px;margin-top:1rem}
@@ -129,8 +148,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .accent-btn:hover,.accent-btn:active{background:var(--c3);color:#fff;border-color:var(--c3)}
 
 .participle-row{display:flex;align-items:center;justify-content:center;gap:12px;padding:16px 0}
-.participle-line{flex:1;max-width:200px;height:2px;background:repeating-linear-gradient(90deg,var(--muted) 0,var(--muted) 6px,transparent 6px,transparent 10px)}
 .participle-input{font-family:'DM Sans',sans-serif;font-size:18px;color:var(--c1);border:none;border-bottom:2px solid var(--c3);background:transparent;outline:none;text-align:center;width:120px;padding:4px 8px;-webkit-appearance:none}
+.participle-input::placeholder{color:var(--light);font-size:24px;opacity:1}
 </style>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -159,6 +178,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
         <div class="section-label">选择时态</div>
         <div class="tense-grid" id="tense-chips"></div>
       </div>
+      <div class="config-card">
+        <div class="section-label-row">
+          <span class="section-label">选择动词</span>
+          <button class="select-all-btn" onclick="toggleAllVerbs()">全选/取消</button>
+        </div>
+        <div class="verb-grid" id="verb-chips"></div>
+      </div>
+      <div class="config-card">
+        <div class="section-label">练习模式</div>
+        <div class="mode-grid" id="mode-chips">
+          <button class="mode-chip on" data-mode="random">随机</button>
+          <button class="mode-chip" data-mode="mistake">练错</button>
+          <button class="mode-chip" data-mode="timed">限时</button>
+        </div>
+        <div class="mode-config" id="mode-config" style="display:none">
+          <label>每题限时：</label>
+          <input type="range" min="10" max="120" value="30" step="10" id="time-slider" oninput="document.getElementById('time-val').textContent=this.value">
+          <span id="time-val">30</span>秒
+        </div>
+      </div>
     </div>
     <button class="start-btn" onclick="startSession()">开始练习 →</button>
   </div>
@@ -169,6 +208,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
       <span id="prog-pct">0%</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="timer-row" id="timer-row" style="display:none">
+      <span class="timer-text" id="timer-text">30秒</span>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+    </div>
     <div id="question-area"></div>
   </div>
 
@@ -190,13 +233,67 @@ const TENSE_SHORT = {'Présent':'Prés.','Imparfait':'Imp.','Passé simple':'Pas
 const DB = {"Acheter":{"Présent":["achète","achètes","achète","achetons","achetez","achètent"],"Imparfait":["achetais","achetais","achetait","achetions","achetiez","achetaient"],"Passé simple":["achetai","achetas","acheta","achetâmes","achetâtes","achetèrent"],"Subjonctif":["achète","achètes","achète","achetions","achetiez","achètent"],"Conditionnel":["achèterais","achèterais","achèterait","achèterions","achèteriez","achèteraient"],"Participe passé":["acheté","","","","",""],"Participe présent":["achetant","","","","",""]},"Acquérir":{"Présent":["acquiers","acquiers","acquiert","acquérons","acquérez","acquièrent"],"Imparfait":["acquérais","acquérais","acquérait","acquérions","acquériez","acquéraient"],"Passé simple":["acquis","acquis","acquit","acquîmes","acquîtes","acquirent"],"Subjonctif":["acquière","acquières","acquière","acquérions","acquériez","acquièrent"],"Conditionnel":["acquerrais","acquerrais","acquerrait","acquerrions","acquerriez","acquerraient"],"Participe passé":["acquis","","","","",""],"Participe présent":["acquérant","","","","",""]},"Aimer":{"Présent":["aime","aimes","aime","aimons","aimez","aiment"],"Imparfait":["aimais","aimais","aimait","aimions","aimiez","aimaient"],"Passé simple":["aimai","aimas","aima","aimâmes","aimâtes","aimèrent"],"Subjonctif":["aime","aimes","aime","aimions","aimiez","aiment"],"Conditionnel":["aimerais","aimerais","aimerait","aimerions","aimeriez","aimeraient"],"Participe passé":["aimé","","","","",""],"Participe présent":["aimant","","","","",""]},"Aller":{"Présent":["vais","vas","va","allons","allez","vont"],"Imparfait":["allais","allais","allait","allions","alliez","allaient"],"Passé simple":["allai","allas","alla","allâmes","allâtes","allèrent"],"Subjonctif":["aille","ailles","aille","allions","alliez","aillent"],"Conditionnel":["irais","irais","irait","irions","iriez","iraient"],"Participe passé":["allé","","","","",""],"Participe présent":["allant","","","","",""]},"Appeler":{"Présent":["appelle","appelles","appelle","appelons","appelez","appellent"],"Imparfait":["appelais","appelais","appelait","appelions","appeliez","appelaient"],"Passé simple":["appelai","appelas","appela","appelâmes","appelâtes","appelèrent"],"Subjonctif":["appelle","appelles","appelle","appelions","appeliez","appellent"],"Conditionnel":["appellerais","appellerais","appellerait","appellerions","appelleriez","appelleraient"],"Participe passé":["appelé","","","","",""],"Participe présent":["appelant","","","","",""]},"Asseoir":{"Présent":["assieds","assieds","assied","asseyons","asseyez","asseyent"],"Imparfait":["asseyais","asseyais","asseyait","asseyions","asseyiez","asseyaient"],"Passé simple":["assis","assis","assit","assîmes","assîtes","assirent"],"Subjonctif":["asseye","asseyes","asseye","asseyions","asseyiez","asseyent"],"Conditionnel":["assiérais","assiérais","assiérait","assiérions","assiériez","assiéraient"],"Participe passé":["assis","","","","",""],"Participe présent":["asseyant","","","","",""]},"Avoir":{"Présent":["ai","as","a","avons","avez","ont"],"Imparfait":["avais","avais","avait","avions","aviez","avaient"],"Passé simple":["eus","eus","eut","eûmes","eûtes","eurent"],"Subjonctif":["aie","aies","ait","ayons","ayez","aient"],"Conditionnel":["aurais","aurais","aurait","aurions","auriez","auraient"],"Participe passé":["eu","","","","",""],"Participe présent":["ayant","","","","",""]},"Battre":{"Présent":["bats","bats","bat","battons","battez","battent"],"Imparfait":["battais","battais","battait","battions","battiez","battaient"],"Passé simple":["battis","battis","battit","battîmes","battîtes","battirent"],"Subjonctif":["batte","battes","batte","battions","battiez","battent"],"Conditionnel":["battrais","battrais","battrait","battrions","battriez","battraient"],"Participe passé":["battu","","","","",""],"Participe présent":["battant","","","","",""]},"Boire":{"Présent":["bois","bois","boit","buvons","buvez","boivent"],"Imparfait":["buvais","buvais","buvait","buvions","buviez","buvaient"],"Passé simple":["bus","bus","but","bûmes","bûtes","burent"],"Subjonctif":["boive","boives","boive","buvions","buviez","boivent"],"Conditionnel":["boirais","boirais","boirait","boirions","boiriez","boiraient"],"Participe passé":["bu","","","","",""],"Participe présent":["buvant","","","","",""]},"Bouillir":{"Présent":["bous","bous","bout","bouillons","bouillez","bouillent"],"Imparfait":["bouillais","bouillais","bouillait","bouillions","bouilliez","bouillaient"],"Passé simple":["bouillis","bouillis","bouillit","bouillîmes","bouillîtes","bouillirent"],"Subjonctif":["bouille","bouilles","bouille","bouillions","bouilliez","bouillent"],"Conditionnel":["bouillirais","bouillirais","bouillirait","bouillirions","bouilliriez","bouilliraient"],"Participe passé":["bouilli","","","","",""],"Participe présent":["bouillant","","","","",""]},"Céder":{"Présent":["cède","cèdes","cède","cédons","cédez","cèdent"],"Imparfait":["cédais","cédais","cédait","cédions","cédiez","cédaient"],"Passé simple":["cédai","cédas","céda","cédâmes","cédâtes","cédèrent"],"Subjonctif":["cède","cèdes","cède","cédions","cédiez","cèdent"],"Conditionnel":["céderais","céderais","céderait","céderions","céderiez","céderaient"],"Participe passé":["cédé","","","","",""],"Participe présent":["cédant","","","","",""]},"Conclure":{"Présent":["conclus","conclus","conclut","concluons","concluez","concluent"],"Imparfait":["concluais","concluais","concluait","concluions","concluiez","concluaient"],"Passé simple":["conclus","conclus","conclut","conclûmes","conclûtes","conclurent"],"Subjonctif":["conclue","conclues","conclue","concluions","concluiez","concluent"],"Conditionnel":["conclurais","conclurais","conclurait","conclurions","concluriez","concluraient"],"Participe passé":["conclu","","","","",""],"Participe présent":["concluant","","","","",""]},"Conduire":{"Présent":["conduis","conduis","conduit","conduisons","conduisez","conduisent"],"Imparfait":["conduisais","conduisais","conduisait","conduisions","conduisiez","conduisaient"],"Passé simple":["conduisis","conduisis","conduisit","conduisîmes","conduisîtes","conduisirent"],"Subjonctif":["conduise","conduises","conduise","conduisions","conduisiez","conduisent"],"Conditionnel":["conduirais","conduirais","conduirait","conduirions","conduiriez","conduiraient"],"Participe passé":["conduit","","","","",""],"Participe présent":["conduisant","","","","",""]},"Connaître":{"Présent":["connais","connais","connaît","connaissons","connaissez","connaissent"],"Imparfait":["connaissais","connaissais","connaissait","connaissions","connaissiez","connaissaient"],"Passé simple":["connus","connus","connut","connûmes","connûtes","connurent"],"Subjonctif":["connaisse","connaisses","connaisse","connaissions","connaissiez","connaissent"],"Conditionnel":["connaîtrais","connaîtrais","connaîtrait","connaîtrions","connaîtriez","connaîtraient"],"Participe passé":["connu","","","","",""],"Participe présent":["connaissant","","","","",""]},"Coudre":{"Présent":["couds","couds","coud","cousons","cousez","cousent"],"Imparfait":["cousais","cousais","cousait","cousions","cousiez","cousaient"],"Passé simple":["cousis","cousis","cousit","cousîmes","cousîtes","cousirent"],"Subjonctif":["couse","couses","couse","cousions","cousiez","cousent"],"Conditionnel":["coudrais","coudrais","coudrait","coudrions","coudriez","coudraient"],"Participe passé":["cousu","","","","",""],"Participe présent":["cousant","","","","",""]},"Courir":{"Présent":["cours","cours","court","courons","courez","courent"],"Imparfait":["courais","courais","courait","courions","couriez","couraient"],"Passé simple":["courus","courus","courut","courûmes","courûtes","coururent"],"Subjonctif":["coure","coures","coure","courions","couriez","courent"],"Conditionnel":["courrais","courrais","courrait","courrions","courriez","courraient"],"Participe passé":["couru","","","","",""],"Participe présent":["courant","","","","",""]},"Craindre":{"Présent":["crains","crains","craint","craignons","craignez","craignent"],"Imparfait":["craignais","craignais","craignait","craignions","craigniez","craignaient"],"Passé simple":["craignis","craignis","craignit","craignîmes","craignîtes","craignirent"],"Subjonctif":["craigne","craignes","craigne","craignions","craigniez","craignent"],"Conditionnel":["craindrais","craindrais","craindrait","craindrions","craindriez","craindraient"],"Participe passé":["craint","","","","",""],"Participe présent":["craignant","","","","",""]},"Croire":{"Présent":["crois","crois","croit","croyons","croyez","croient"],"Imparfait":["croyais","croyais","croyait","croyions","croyiez","croyaient"],"Passé simple":["crus","crus","crut","crûmes","crûtes","crurent"],"Subjonctif":["croie","croies","croie","croyions","croyiez","croient"],"Conditionnel":["croirais","croirais","croirait","croirions","croiriez","croiraient"],"Participe passé":["cru","","","","",""],"Participe présent":["croyant","","","","",""]},"Croître":{"Présent":["croîs","croîs","croît","croissons","croissez","croissent"],"Imparfait":["croissais","croissais","croissait","croissions","croissiez","croissaient"],"Passé simple":["crûs","crûs","crût","crûmes","crûtes","crûrent"],"Subjonctif":["croisse","croisses","croisse","croissions","croissiez","croissent"],"Conditionnel":["croîtrais","croîtrais","croîtrait","croîtrions","croîtriez","croîtraient"],"Participe passé":["crû","","","","",""],"Participe présent":["croissant","","","","",""]},"Cueillir":{"Présent":["cueille","cueilles","cueille","cueillons","cueillez","cueillent"],"Imparfait":["cueillais","cueillais","cueillait","cueillions","cueilliez","cueillaient"],"Passé simple":["cueillis","cueillis","cueillit","cueillîmes","cueillîtes","cueillirent"],"Subjonctif":["cueille","cueilles","cueille","cueillions","cueilliez","cueillent"],"Conditionnel":["cueillerais","cueillerais","cueillerait","cueillerions","cueilleriez","cueilleraient"],"Participe passé":["cueilli","","","","",""],"Participe présent":["cueillant","","","","",""]},"Devoir":{"Présent":["dois","dois","doit","devons","devez","doivent"],"Imparfait":["devais","devais","devait","devions","deviez","devaient"],"Passé simple":["dus","dus","dut","dûmes","dûtes","durent"],"Subjonctif":["doive","doives","doive","devions","deviez","doivent"],"Conditionnel":["devrais","devrais","devrait","devrions","devriez","devraient"],"Participe passé":["du","","","","",""],"Participe présent":["devant","","","","",""]},"Dépêcher":{"Présent":["dépêche","dépêches","dépêche","dépêchons","dépêchez","dépêchent"],"Imparfait":["dépêchais","dépêchais","dépêchait","dépêchions","dépêchiez","dépêchaient"],"Passé simple":["dépêchai","dépêchas","dépêcha","dépêchâmes","dépêchâtes","dépêchèrent"],"Subjonctif":["dépêche","dépêches","dépêche","dépêchions","dépêchiez","dépêchent"],"Conditionnel":["dépêcherais","dépêcherais","dépêcherait","dépêcherions","dépêcheriez","dépêcheraient"],"Participe passé":["dépêché","","","","",""],"Participe présent":["dépêchant","","","","",""]},"Dire":{"Présent":["dis","dis","dit","disons","dites","disent"],"Imparfait":["disais","disais","disait","disions","disiez","disaient"],"Passé simple":["dis","dis","dit","dîmes","dîtes","dirent"],"Subjonctif":["dise","dises","dise","disions","disiez","disent"],"Conditionnel":["dirais","dirais","dirait","dirions","diriez","diraient"],"Participe passé":["dit","","","","",""],"Participe présent":["disant","","","","",""]},"Écrire":{"Présent":["écris","écris","écrit","écrivons","écrivez","écrivent"],"Imparfait":["écrivais","écrivais","écrivait","écrivions","écriviez","écrivaient"],"Passé simple":["écrivis","écrivis","écrivit","écrivîmes","écrivîtes","écrivirent"],"Subjonctif":["écrive","écrives","écrive","écrivions","écriviez","écrivent"],"Conditionnel":["écrirais","écrirais","écrirait","écririons","écririez","écriraient"],"Participe passé":["écrit","","","","",""],"Participe présent":["écrivant","","","","",""]},"Émouvoir":{"Présent":["émeus","émeus","émeut","émouvons","émouvez","émeuvent"],"Imparfait":["émouvais","émouvais","émouvait","émouvions","émouviez","émouvaient"],"Passé simple":["émus","émus","émut","émûmes","émûtes","émurent"],"Subjonctif":["émeuve","émeuves","émeuve","émouvions","émouviez","émeuvent"],"Conditionnel":["émouvrais","émouvrais","émouvrait","émouvrions","émouvriez","émouvraient"],"Participe passé":["ému","","","","",""],"Participe présent":["émouvant","","","","",""]},"Enlever":{"Présent":["enlève","enlèves","enlève","enlevons","enlevez","enlèvent"],"Imparfait":["enlevais","enlevais","enlevait","enlevions","enleviez","enlevaient"],"Passé simple":["enlevai","enlevas","enleva","enlevâmes","enlevâtes","enlevèrent"],"Subjonctif":["enlève","enlèves","enlève","enlevions","enleviez","enlèvent"],"Conditionnel":["enlèverais","enlèverais","enlèverait","enlèverions","enlèveriez","enlèveraient"],"Participe passé":["enlevé","","","","",""],"Participe présent":["enlevant","","","","",""]},"Envoyer":{"Présent":["envoie","envoies","envoie","envoyons","envoyez","envoient"],"Imparfait":["envoyais","envoyais","envoyait","envoyions","envoyiez","envoyaient"],"Passé simple":["envoyai","envoyas","envoya","envoyâmes","envoyâtes","envoyèrent"],"Subjonctif":["envoie","envoies","envoie","envoyions","envoyiez","envoient"],"Conditionnel":["enverrais","enverrais","enverrait","enverrions","enverriez","enverraient"],"Participe passé":["envoyé","","","","",""],"Participe présent":["envoyant","","","","",""]},"Être":{"Présent":["suis","es","est","sommes","êtes","sont"],"Imparfait":["étais","étais","était","étions","étiez","étaient"],"Passé simple":["fus","fus","fut","fûmes","fûtes","furent"],"Subjonctif":["sois","sois","soit","soyons","soyez","soient"],"Conditionnel":["serais","serais","serait","serions","seriez","seraient"],"Participe présent":["étant","","","","",""]},"Faire":{"Présent":["fais","fais","fait","faisons","faites","font"],"Imparfait":["faisais","faisais","faisait","faisions","faisiez","faisaient"],"Passé simple":["fis","fis","fit","fîmes","fîtes","firent"],"Subjonctif":["fasse","fasses","fasse","fassions","fassiez","fassent"],"Conditionnel":["ferais","ferais","ferait","ferions","feriez","feraient"],"Participe passé":["fait","","","","",""],"Participe présent":["faisant","","","","",""]},"Falloir":{"Présent":["","","faut","","",""],"Imparfait":["","","fallait","","",""],"Passé simple":["","","fallut","","",""],"Subjonctif":["","","faille","","",""],"Conditionnel":["","","faudrait","","",""]},"Feuilleter":{"Présent":["feuillette","feuillettes","feuillette","feuilletons","feuilletez","feuillettent"],"Imparfait":["feuilletais","feuilletais","feuilletait","feuilletions","feuilletiez","feuilletaient"],"Passé simple":["feuilletai","feuilletas","feuilleta","feuilletâmes","feuilletâtes","feuilletèrent"],"Subjonctif":["feuillette","feuillettes","feuillette","feuilletions","feuilletiez","feuillettent"],"Conditionnel":["feuilletterais","feuilletterais","feuilletterait","feuilletterions","feuilletteriez","feuilletteraient"],"Participe passé":["feuilleté","","","","",""],"Participe présent":["feuilletant","","","","",""]},"Finir":{"Présent":["finis","finis","finit","finissons","finissez","finissent"],"Imparfait":["finissais","finissais","finissait","finissions","finissiez","finissaient"],"Passé simple":["finis","finis","finit","finîmes","finîtes","finirent"],"Subjonctif":["finisse","finisses","finisse","finissions","finissiez","finissent"],"Conditionnel":["finirais","finirais","finirait","finirions","finiriez","finiraient"],"Participe passé":["fini","","","","",""],"Participe présent":["finissant","","","","",""]},"Fuir":{"Présent":["fuis","fuis","fuit","fuyons","fuyez","fuient"],"Imparfait":["fuyais","fuyais","fuyait","fuyions","fuyiez","fuyaient"],"Passé simple":["fuis","fuis","fuit","fuîmes","fuîtes","fuirent"],"Subjonctif":["fuie","fuies","fuie","fuyions","fuyiez","fuient"],"Conditionnel":["fuirais","fuirais","fuirait","fuirions","fuiriez","fuiraient"],"Participe présent":["fuyant","","","","",""]},"Geler":{"Présent":["gèle","gèles","gèle","gelons","gelez","gèlent"],"Imparfait":["gelais","gelais","gelait","gelions","geliez","gelaient"],"Passé simple":["gelai","gelas","gela","gelâmes","gelâtes","gelèrent"],"Subjonctif":["gèle","gèles","gèle","gelions","geliez","gèlent"],"Conditionnel":["gèlerais","gèlerais","gèlerait","gèlerions","gèleriez","gèleraient"],"Participe passé":["gelé","","","","",""],"Participe présent":["gelant","","","","",""]},"Haïr":{"Présent":["hais","hais","hait","haïssons","haïssez","haïssent"],"Imparfait":["haïssais","haïssais","haïssait","haïssions","haïssiez","haïssaient"],"Passé simple":["haïs","haïs","haït","haïmes","haïtes","haïrent"],"Subjonctif":["haïsse","haïsses","haïsse","haïssions","haïssiez","haïssent"],"Conditionnel":["haïrais","haïrais","haïrait","haïrions","haïriez","haïraient"],"Participe passé":["haï","","","","",""],"Participe présent":["haïssant","","","","",""]},"Jeter":{"Présent":["jette","jettes","jette","jetons","jetez","jettent"],"Imparfait":["jetais","jetais","jetait","jetions","jetiez","jetaient"],"Passé simple":["jetai","jetas","jeta","jetâmes","jetâtes","jetèrent"],"Subjonctif":["jette","jettes","jette","jetions","jetiez","jettent"],"Conditionnel":["jetterais","jetterais","jetterait","jetterions","jetteriez","jetteraient"],"Participe passé":["jeté","","","","",""],"Participe présent":["jetant","","","","",""]},"Jumeler":{"Présent":["jumelle","jumelles","jumelle","jumelons","jumelez","jumellent"],"Imparfait":["jumelais","jumelais","jumelait","jumelions","jumeliez","jumelaient"],"Passé simple":["jumelai","jumelas","jumela","jumelâmes","jumelâtes","jumelèrent"],"Subjonctif":["jumelle","jumelles","jumelle","jumelions","jumeliez","jumellent"],"Conditionnel":["jumellerais","jumellerais","jumellerait","jumellerions","jumelleriez","jumelleraient"],"Participe passé":["jumelé","","","","",""],"Participe présent":["jumelant","","","","",""]},"Lancer":{"Présent":["lance","lances","lance","lançons","lancez","lancent"],"Imparfait":["lançais","lançais","lançait","lancions","lanciez","lançaient"],"Passé simple":["lançai","lanças","lança","lançâmes","lançâtes","lancèrent"],"Subjonctif":["lance","lances","lance","lancions","lanciez","lancent"],"Conditionnel":["lancerais","lancerais","lancerait","lancerions","lanceriez","lanceraient"],"Participe passé":["lancé","","","","",""],"Participe présent":["lançant","","","","",""]},"Lever":{"Présent":["lève","lèves","lève","levons","levez","lèvent"],"Imparfait":["levais","levais","levait","levions","leviez","levaient"],"Passé simple":["levai","levas","leva","levâmes","levâtes","levèrent"],"Subjonctif":["lève","lèves","lève","levions","leviez","lèvent"],"Conditionnel":["lèverais","lèverais","lèverait","lèverions","lèveriez","lèveraient"],"Participe passé":["levé","","","","",""],"Participe présent":["levant","","","","",""]},"Lire":{"Présent":["lis","lis","lit","lisons","lisez","lisent"],"Imparfait":["lisais","lisais","lisait","lisions","lisiez","lisaient"],"Passé simple":["lus","lus","lut","lûmes","lûtes","lurent"],"Subjonctif":["lise","lises","lise","lisions","lisiez","lisent"],"Conditionnel":["lirais","lirais","lirait","lirions","liriez","liraient"],"Participe passé":["lu","","","","",""],"Participe présent":["lisant","","","","",""]},"Manger":{"Présent":["mange","manges","mange","mangeons","mangez","mangent"],"Imparfait":["mangeais","mangeais","mangeait","mangions","mangiez","mangeaient"],"Passé simple":["mangeai","mangeas","mangea","mangeâmes","mangeâtes","mangèrent"],"Subjonctif":["mange","manges","mange","mangions","mangiez","mangent"],"Conditionnel":["mangerais","mangerais","mangerait","mangerions","mangeriez","mangeraient"],"Participe passé":["mangé","","","","",""],"Participe présent":["mangeant","","","","",""]},"Mener":{"Présent":["mène","mènes","mène","menons","menez","mènent"],"Imparfait":["menais","menais","menait","menions","meniez","menaient"],"Passé simple":["menai","menas","mena","menâmes","menâtes","menèrent"],"Subjonctif":["mène","mènes","mène","menions","meniez","mènent"],"Conditionnel":["mènerais","mènerais","mènerait","mènerions","mèneriez","mèneraient"],"Participe passé":["mené","","","","",""],"Participe présent":["menant","","","","",""]},"Mettre":{"Présent":["mets","mets","met","mettons","mettez","mettent"],"Imparfait":["mettais","mettais","mettait","mettions","mettiez","mettaient"],"Passé simple":["mis","mis","mit","mîmes","mîtes","mirent"],"Subjonctif":["mette","mettes","mette","mettions","mettiez","mettent"],"Conditionnel":["mettrais","mettrais","mettrait","mettrions","mettriez","mettraient"],"Participe passé":["mis","","","","",""],"Participe présent":["mettant","","","","",""]},"Moudre":{"Présent":["mouds","mouds","moud","moulons","moulez","moulent"],"Imparfait":["moulais","moulais","moulait","moulions","mouliez","moulaient"],"Passé simple":["moulus","moulus","moulut","moulûmes","moulûtes","moulurent"],"Subjonctif":["moule","moules","moule","moulions","mouliez","moulent"],"Conditionnel":["moudrais","moudrais","moudrait","moudrions","moudriez","moudraient"],"Participe passé":["moulu","","","","",""],"Participe présent":["moulant","","","","",""]},"Mourir":{"Présent":["meurs","meurs","meurt","mourons","mourez","meurent"],"Imparfait":["mourais","mourais","mourait","mourions","mouriez","mouraient"],"Passé simple":["mourus","mourus","mourut","mourûmes","mourûtes","moururent"],"Subjonctif":["meure","meures","meure","mourions","mouriez","meurent"],"Conditionnel":["mourrais","mourrais","mourrait","mourrions","mourriez","mourraient"],"Participe passé":["mort","","","","",""],"Participe présent":["mourant","","","","",""]},"Naître":{"Présent":["nais","nais","naît","naissons","naissez","naissent"],"Imparfait":["naissais","naissais","naissait","naissions","naissiez","naissaient"],"Passé simple":["naquis","naquis","naquit","naquîmes","naquîtes","naquirent"],"Subjonctif":["naisse","naisses","naisse","naissions","naissiez","naissent"],"Conditionnel":["naîtrais","naîtrais","naîtrait","naîtrions","naîtriez","naîtraient"],"Participe passé":["né","","","","",""],"Participe présent":["naissant","","","","",""]},"Ouvrir":{"Présent":["ouvre","ouvres","ouvre","ouvrons","ouvrez","ouvrent"],"Imparfait":["ouvrais","ouvrais","ouvrait","ouvrions","ouvriez","ouvraient"],"Passé simple":["ouvris","ouvris","ouvrit","ouvrîmes","ouvrîtes","ouvrirent"],"Subjonctif":["ouvre","ouvres","ouvre","ouvrions","ouvriez","ouvrent"],"Conditionnel":["ouvrirais","ouvrirais","ouvrirait","ouvririons","ouvririez","ouvriraient"],"Participe passé":["ouvert","","","","",""],"Participe présent":["ouvrant","","","","",""]},"Payer":{"Présent":["paie","paies","paie","payons","payez","paient"],"Imparfait":["payais","payais","payait","payions","payiez","payaient"],"Passé simple":["payai","payas","paya","payâmes","payâtes","payèrent"],"Subjonctif":["paie","paies","paie","payions","payiez","paient"],"Conditionnel":["paierais","paierais","paierait","paierions","paieriez","paieraient"],"Participe passé":["payé","","","","",""],"Participe présent":["payant","","","","",""]},"Peindre":{"Présent":["peins","peins","peint","peignons","peignez","peignent"],"Imparfait":["peignais","peignais","peignait","peignions","peigniez","peignaient"],"Passé simple":["peignis","peignis","peignit","peignîmes","peignîtes","peignirent"],"Subjonctif":["peigne","peignes","peigne","peignions","peigniez","peignent"],"Conditionnel":["peindrais","peindrais","peindrait","peindrions","peindriez","peindraient"],"Participe passé":["peint","","","","",""],"Participe présent":["peignant","","","","",""]},"Peler":{"Présent":["pèle","pèles","pèle","pelons","pelez","pèlent"],"Imparfait":["pelais","pelais","pelait","pelions","peliez","pelaient"],"Passé simple":["pelai","pelas","pela","pelâmes","pelâtes","pelèrent"],"Subjonctif":["pèle","pèles","pèle","pelions","peliez","pèlent"],"Conditionnel":["pèlerais","pèlerais","pèlerait","pèlerions","pèleriez","pèleraient"],"Participe passé":["pelé","","","","",""],"Participe présent":["pelant","","","","",""]},"Perdre":{"Présent":["perds","perds","perd","perdons","perdez","perdent"],"Imparfait":["perdais","perdais","perdait","perdions","perdiez","perdaient"],"Passé simple":["perdis","perdis","perdit","perdîmes","perdîtes","perdirent"],"Subjonctif":["perde","perdes","perde","perdions","perdiez","perdent"],"Conditionnel":["perdrais","perdrais","perdrait","perdrions","perdriez","perdraient"],"Participe passé":["perdu","","","","",""],"Participe présent":["perdant","","","","",""]},"Peser":{"Présent":["pèse","pèses","pèse","pesons","pesez","pèsent"],"Imparfait":["pesais","pesais","pesait","pesions","pesiez","pesaient"],"Passé simple":["pesai","pesas","pesa","pesâmes","pesâtes","pesèrent"],"Subjonctif":["pèse","pèses","pèse","pesions","pesiez","pèsent"],"Conditionnel":["pèserais","pèserais","pèserait","pèserions","pèseriez","pèseraient"],"Participe passé":["pesé","","","","",""],"Participe présent":["pesant","","","","",""]},"Plaire":{"Présent":["plais","plais","plaît","plaisons","plaisez","plaisent"],"Imparfait":["plaisais","plaisais","plaisait","plaisions","plaisiez","plaisaient"],"Passé simple":["plus","plus","plut","plûmes","plûtes","plurent"],"Subjonctif":["plaise","plaises","plaise","plaisions","plaisiez","plaisent"],"Conditionnel":["plairais","plairais","plairait","plairions","plairiez","plairaient"],"Participe passé":["plu","","","","",""],"Participe présent":["plaisant","","","","",""]},"Pouvoir":{"Présent":["peux","peux","peut","pouvons","pouvez","peuvent"],"Imparfait":["pouvais","pouvais","pouvait","pouvions","pouviez","pouvaient"],"Passé simple":["pus","pus","put","pûmes","pûtes","purent"],"Subjonctif":["puisse","puisses","puisse","puissions","puissiez","puissent"],"Conditionnel":["pourrais","pourrais","pourrait","pourrions","pourriez","pourraient"],"Participe passé":["pu","","","","",""],"Participe présent":["pouvant","","","","",""]},"Prendre":{"Présent":["prends","prends","prend","prenons","prenez","prennent"],"Imparfait":["prenais","prenais","prenait","prenions","preniez","prenaient"],"Passé simple":["pris","pris","prit","prîmes","prîtes","prirent"],"Subjonctif":["prenne","prennes","prenne","prenions","preniez","prennent"],"Conditionnel":["prendrais","prendrais","prendrait","prendrions","prendriez","prendraient"],"Participe passé":["pris","","","","",""],"Participe présent":["prenant","","","","",""]},"Recevoir":{"Présent":["reçois","reçois","reçoit","recevons","recevez","reçoivent"],"Imparfait":["recevais","recevais","recevait","recevions","receviez","recevaient"],"Passé simple":["reçus","reçus","reçut","reçûmes","reçûtes","reçurent"],"Subjonctif":["reçoive","reçoives","reçoive","recevions","receviez","reçoivent"],"Conditionnel":["recevrais","recevrais","recevrait","recevrions","recevriez","recevraient"],"Participe passé":["reçu","","","","",""],"Participe présent":["recevant","","","","",""]},"Résoudre":{"Présent":["résous","résous","résout","résolvons","résolvez","résolvent"],"Imparfait":["résolvais","résolvais","résolvait","résolvions","résolviez","résolvaient"],"Passé simple":["résolus","résolus","résolut","résolûmes","résolûtes","résolurent"],"Subjonctif":["résolve","résolves","résolve","résolvions","résolviez","résolvent"],"Conditionnel":["résoudrais","résoudrais","résoudrait","résoudrions","résoudriez","résoudraient"],"Participe passé":["résolu","","","","",""],"Participe présent":["résolvant","","","","",""]},"Rire":{"Présent":["ris","ris","rit","rions","riez","rient"],"Imparfait":["riais","riais","riait","riions","riiez","riaient"],"Passé simple":["ris","ris","rit","rîmes","rîtes","rirent"],"Subjonctif":["rie","ries","rie","riions","riiez","rient"],"Conditionnel":["rirais","rirais","rirait","ririons","ririez","riraient"],"Participe passé":["ri","","","","",""],"Participe présent":["riant","","","","",""]},"Rompre":{"Présent":["romps","romps","rompt","rompons","rompez","rompent"],"Imparfait":["rompais","rompais","rompait","rompions","rompiez","rompaient"],"Passé simple":["rompis","rompis","rompit","rompîmes","rompîtes","rompirent"],"Subjonctif":["rompe","rompes","rompe","rompions","rompiez","rompent"],"Conditionnel":["romprais","romprais","romprait","romprions","rompriez","rompraient"],"Participe passé":["rompu","","","","",""],"Participe présent":["rompant","","","","",""]},"Savoir":{"Présent":["sais","sais","sait","savons","savez","savent"],"Imparfait":["savais","savais","savait","savions","saviez","savaient"],"Passé simple":["sus","sus","sut","sûmes","sûtes","surent"],"Subjonctif":["sache","saches","sache","sachions","sachiez","sachent"],"Conditionnel":["saurais","saurais","saurait","saurions","sauriez","sauraient"],"Participe passé":["su","","","","",""],"Participe présent":["sachant","","","","",""]},"Sentir":{"Présent":["sens","sens","sent","sentons","sentez","sentent"],"Imparfait":["sentais","sentais","sentait","sentions","sentiez","sentaient"],"Passé simple":["sentis","sentis","sentit","sentîmes","sentîtes","sentirent"],"Subjonctif":["sente","sentes","sente","sentions","sentiez","sentent"],"Conditionnel":["sentirais","sentirais","sentirait","sentirions","sentiriez","sentiraient"],"Participe passé":["senti","","","","",""],"Participe présent":["sentant","","","","",""]},"Servir":{"Présent":["sers","sers","sert","servons","servez","servent"],"Imparfait":["servais","servais","servait","servions","serviez","servaient"],"Passé simple":["servis","servis","servit","servîmes","servîtes","servirent"],"Subjonctif":["serve","serves","serve","servions","serviez","servent"],"Conditionnel":["servirais","servirais","servirait","servirions","serviriez","serviraient"],"Participe passé":["servi","","","","",""],"Participe présent":["servant","","","","",""]},"Souvenir":{"Présent":["souviens","souviens","souvient","souvenons","souvenez","souviennent"],"Imparfait":["souvenais","souvenais","souvenait","souvenions","souveniez","souvenaient"],"Passé simple":["souvins","souvins","souvint","souvînmes","souvîntes","souvinrent"],"Subjonctif":["souvienne","souviennes","souvienne","souvenions","souveniez","souviennent"],"Conditionnel":["souviendrais","souviendrais","souviendrait","souviendrions","souviendriez","souviendraient"],"Participe passé":["souvenu","","","","",""],"Participe présent":["souvenant","","","","",""]},"Suivre":{"Présent":["suis","suis","suit","suivons","suivez","suivent"],"Imparfait":["suivais","suivais","suivait","suivions","suiviez","suivaient"],"Passé simple":["suivis","suivis","suivit","suivîmes","suivîtes","suivirent"],"Subjonctif":["suive","suives","suive","suivions","suiviez","suivent"],"Conditionnel":["suivrais","suivrais","suivrait","suivrions","suivriez","suivraient"],"Participe passé":["suivi","","","","",""],"Participe présent":["suivant","","","","",""]},"Tenir":{"Présent":["tiens","tiens","tient","tenons","tenez","tiennent"],"Imparfait":["tenais","tenais","tenait","tenions","teniez","tenaient"],"Passé simple":["tins","tins","tint","tînmes","tîntes","tinrent"],"Subjonctif":["tienne","tiennes","tienne","tenions","teniez","tiennent"],"Conditionnel":["tiendrais","tiendrais","tiendrait","tiendrions","tiendriez","tiendraient"],"Participe passé":["tenu","","","","",""],"Participe présent":["tenant","","","","",""]},"Vaincre":{"Présent":["vaincs","vaincs","vainc","vainquons","vainquez","vainquent"],"Imparfait":["vainquais","vainquais","vainquait","vainquions","vainquiez","vainquaient"],"Passé simple":["vainquis","vainquis","vainquit","vainquîmes","vainquîtes","vainquirent"],"Subjonctif":["vainque","vainques","vainque","vainquions","vainquiez","vainquent"],"Conditionnel":["vaincrais","vaincrais","vaincrait","vaincrions","vaincriez","vaincraient"],"Participe passé":["vaincu","","","","",""],"Participe présent":["vainquant","","","","",""]},"Valoir":{"Présent":["vaux","vaux","vaut","valons","valez","valent"],"Imparfait":["valais","valais","valait","valions","valiez","valaient"],"Passé simple":["valus","valus","valut","valûmes","valûtes","valurent"],"Subjonctif":["vaille","vailles","vaille","valions","valiez","vaillent"],"Conditionnel":["vaudrais","vaudrais","vaudrait","vaudrions","vaudriez","vaudraient"],"Participe passé":["valu","","","","",""],"Participe présent":["valant","","","","",""]},"Venir":{"Présent":["viens","viens","vient","venons","venez","viennent"],"Imparfait":["venais","venais","venait","venions","veniez","venaient"],"Passé simple":["vins","vins","vint","vînmes","vîntes","vinrent"],"Subjonctif":["vienne","viennes","vienne","venions","veniez","viennent"],"Conditionnel":["viendrais","viendrais","viendrait","viendrions","viendriez","viendraient"],"Participe passé":["venu","","","","",""],"Participe présent":["venant","","","","",""]},"Vivre":{"Présent":["vis","vis","vit","vivons","vivez","vivent"],"Imparfait":["vivais","vivais","vivait","vivions","viviez","vivaient"],"Passé simple":["vécus","vécus","vécut","vécûmes","vécûtes","vécurent"],"Subjonctif":["vive","vives","vive","vivions","viviez","vivent"],"Conditionnel":["vivrais","vivrais","vivrait","vivrions","vivriez","vivraient"],"Participe passé":["vécu","","","","",""],"Participe présent":["vivant","","","","",""]},"Voir":{"Présent":["vois","vois","voit","voyons","voyez","voient"],"Imparfait":["voyais","voyais","voyait","voyions","voyiez","voyaient"],"Passé simple":["vis","vis","vit","vîmes","vîtes","virent"],"Subjonctif":["voie","voies","voie","voyions","voyiez","voient"],"Conditionnel":["verrais","verrais","verrait","verrions","verriez","verraient"],"Participe passé":["vu","","","","",""],"Participe présent":["voyant","","","","",""]},"Vouloir":{"Présent":["veux","veux","veut","voulons","voulez","veulent"],"Imparfait":["voulais","voulais","voulait","voulions","vouliez","voulaient"],"Passé simple":["voulus","voulus","voulut","voulûmes","voulûtes","voulurent"],"Subjonctif":["veuille","veuilles","veuille","voulions","vouliez","veuillent"],"Conditionnel":["voudrais","voudrais","voudrait","voudrions","voudriez","voudraient"],"Participe passé":["voulu","","","","",""],"Participe présent":["voulant","","","","",""]}};
 
 let activeTenses = new Set(['Présent','Imparfait','Conditionnel']);
-let session = {questions:[], current:0, checked:false, results:[]};
+let activeVerbs = new Set();
+let currentMode = 'random';
+let timeLimit = 30;
+let session = {questions:[], current:0, checked:false, results:[], startTime:Date.now(), endTime:0, timer:null, timeLeft:0};
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['practice','history'][i]===t)});
   document.getElementById('tab-practice').style.display = t==='practice'?'':'none';
   document.getElementById('tab-history').style.display = t==='history'?'':'none';
   if(t==='history') renderHistory();
+}
+
+function initVerbs(){
+  const saved = localStorage.getItem('frVerb_activeVerbs');
+  const allVerbs = Object.keys(DB);
+  if(saved){
+    activeVerbs = new Set(JSON.parse(saved));
+  } else {
+    activeVerbs = new Set(allVerbs);
+    localStorage.setItem('frVerb_activeVerbs', JSON.stringify(allVerbs));
+  }
+  const c = document.getElementById('verb-chips');
+  c.innerHTML = '';
+  allVerbs.forEach(verb=>{
+    const el = document.createElement('button');
+    el.className = 'tense-chip' + (activeVerbs.has(verb) ? ' on' : '');
+    el.textContent = verb;
+    el.onclick = ()=>{
+      if(activeVerbs.has(verb)){
+        if(activeVerbs.size>1) activeVerbs.delete(verb);
+      } else {
+        activeVerbs.add(verb);
+      }
+      el.classList.toggle('on', activeVerbs.has(verb));
+      localStorage.setItem('frVerb_activeVerbs', JSON.stringify([...activeVerbs]));
+    };
+    c.appendChild(el);
+  });
+}
+
+function toggleAllVerbs(){
+  const allVerbs = Object.keys(DB);
+  const allSelected = activeVerbs.size === allVerbs.length;
+  if(allSelected){
+    activeVerbs = new Set([allVerbs[0]]);
+  } else {
+    activeVerbs = new Set(allVerbs);
+  }
+  localStorage.setItem('frVerb_activeVerbs', JSON.stringify([...activeVerbs]));
+  initVerbs();
+}
+
+function initModes(){
+  document.querySelectorAll('.mode-chip').forEach(el=>{
+    el.onclick = ()=>{
+      document.querySelectorAll('.mode-chip').forEach(e=>e.classList.remove('on'));
+      el.classList.add('on');
+      currentMode = el.dataset.mode;
+      document.getElementById('mode-config').style.display = currentMode === 'timed' ? '' : 'none';
+    };
+  });
 }
 
 function initChips(){
@@ -218,6 +315,7 @@ function initChips(){
 function buildPool(){
   const pool = [];
   Object.keys(DB).forEach(verb=>{
+    if(!activeVerbs.has(verb)) return;
     activeTenses.forEach(tense=>{
       if(DB[verb][tense]){
         const forms = DB[verb][tense];
@@ -230,20 +328,76 @@ function buildPool(){
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
+function buildMistakePool(){
+  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
+  const mistakes = new Set();
+  history.forEach(rec=>{
+    (rec.results||[]).forEach(r=>{
+      if(r && !r.allRight && !r.skipped){
+        mistakes.add(`${r.verb}||${r.tense}`);
+      }
+    });
+  });
+  const pool = [];
+  mistakes.forEach(key=>{
+    const [verb, tense] = key.split('||');
+    if(DB[verb] && DB[verb][tense] && activeVerbs.has(verb) && activeTenses.has(tense)){
+      const forms = DB[verb][tense];
+      if(forms.some(f=>f)) pool.push({verb, tense, forms});
+    }
+  });
+  return pool.length ? pool : buildPool();
+}
+
 function startSession(){
   const n = parseInt(document.getElementById('count-slider').value);
-  const pool = shuffle(buildPool()).slice(0, n);
+  timeLimit = parseInt(document.getElementById('time-slider').value);
+  let pool;
+  if(currentMode === 'mistake'){
+    pool = shuffle(buildMistakePool()).slice(0, n);
+  } else {
+    pool = shuffle(buildPool()).slice(0, n);
+  }
   if(!pool.length){showToast('请至少选择一个时态！');return;}
-  session = {questions:pool, current:0, checked:false, results:[]};
+  session = {questions:pool, current:0, checked:false, results:[], startTime:Date.now(), endTime:0};
   document.getElementById('config-screen').style.display='none';
   document.getElementById('quiz-screen').style.display='';
   document.getElementById('result-screen').style.display='none';
   renderQuestion();
 }
 
-const ACCENT_CHARS = ['à','â','é','è','ê','ë','î','ï','ô','œ','ù','û','ü'];
+const ACCENT_CHARS = ['à','â','ç','é','è','ê','ë','î','ï','ô','œ','ù','û','ü'];
+
+function startTimer(){
+  clearInterval(session.timer);
+  if(currentMode !== 'timed') return;
+  const total = timeLimit * 1000;
+  session.timeLeft = total;
+  const timerRow = document.getElementById('timer-row');
+  const timerText = document.getElementById('timer-text');
+  const timerFill = document.getElementById('timer-fill');
+  timerRow.style.display = '';
+  timerRow.classList.add('active');
+  timerText.textContent = timeLimit + '秒';
+  timerFill.style.width = '100%';
+  const startTime = Date.now();
+  session.timer = setInterval(()=>{
+    const elapsed = Date.now() - startTime;
+    const remaining = Math.max(0, total - elapsed);
+    session.timeLeft = remaining;
+    timerFill.style.width = (remaining/total*100) + '%';
+    timerText.textContent = Math.ceil(remaining/1000) + '秒';
+    if(remaining <= 0){
+      clearInterval(session.timer);
+      session.results.push({verb:session.questions[session.current].verb,tense:session.questions[session.current].tense,skipped:true});
+      showToast('时间到！');
+      nextQuestion();
+    }
+  }, 100);
+}
 
 function renderQuestion(){
+  if(currentMode === 'timed') startTimer();
   const q = session.questions[session.current];
   const total = session.questions.length;
   const pct = Math.round(session.current/total*100);
@@ -257,9 +411,7 @@ function renderQuestion(){
 
   const inputArea = isPP ? `
     <div class="participle-row">
-      <div class="participle-line"></div>
       <input class="participle-input" id="inp-0" placeholder="..." autocomplete="off" autocorrect="off" spellcheck="false">
-      <div class="participle-line"></div>
     </div>` :
     `<div class="person-grid">${[0,1,2,3,4,5].map(i=>`
       <div class="person-row" id="row-${i}">
@@ -334,6 +486,7 @@ function checkAnswers(){
 }
 
 function nextQuestion(){
+  clearInterval(session.timer);
   if(!session.checked){
     const q = session.questions[session.current];
     session.results[session.current] = {verb:q.verb, tense:q.tense, allRight:false, skipped:true};
@@ -345,6 +498,7 @@ function nextQuestion(){
 
 function showResult(){
   document.getElementById('quiz-screen').style.display='none';
+  session.endTime = Date.now();
   const rs = document.getElementById('result-screen');
   rs.style.display='';
   const correct = session.results.filter(r=>r&&r.allRight).length;
@@ -374,7 +528,10 @@ function saveSession(){
     total: session.questions.length,
     correct: session.results.filter(r=>r&&r.allRight).length,
     tenses: [...activeTenses],
-    results: session.results
+    results: session.results,
+    mode: currentMode,
+    timeLimit: timeLimit,
+    duration: session.endTime - session.startTime
   };
   history.unshift(rec);
   localStorage.setItem('frVerb_history', JSON.stringify(history.slice(0,50)));
@@ -393,14 +550,17 @@ function renderHistory(){
   if(!history.length){list.innerHTML='<div class="empty-state">暂无练习记录</div>';return;}
   list.innerHTML = history.map((rec,idx)=>{
     const pct = Math.round(rec.correct/rec.total*100);
-    const tenseStr = (rec.tenses||[]).map(t=>TENSE_SHORT[t]||t).join('、');
+    const modeNames = {random:'随机', mistake:'练错', timed:'限时'};
+    const modeStr = modeNames[rec.mode] || '';
+    const tenseStr = (rec.tenses||[]).map(t=>TENSE_SHORT[t]||t).join(' - ');
+    const durationStr = rec.mode === 'timed' && rec.duration ? `${(rec.duration/1000).toFixed(1)}s/${rec.timeLimit*rec.total}s` : '';
     return `<div class="hist-card" onclick="toggleDetail(${idx})">
       <div class="hist-top">
         <div>
           <div style="font-weight:500;font-size:14px">${rec.date}</div>
-          <div class="hist-detail">${tenseStr} · ${rec.total} 题</div>
+          <div class="hist-detail">${modeStr && modeStr + ' · '}${tenseStr} · ${rec.total} 题</div>
         </div>
-        <div class="hist-score">${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
+        <div class="hist-score"><span style="font-size:12px;color:var(--muted);font-weight:400">${durationStr && durationStr + ' · '}</span>${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
       </div>
       <div class="detail-panel" id="det-${idx}">
         ${(rec.results||[]).filter(Boolean).map(r=>`
@@ -442,4 +602,6 @@ document.addEventListener('mousedown', e => {
 });
 
 initChips();
+initVerbs();
+initModes();
 </script>
