@@ -1,5 +1,0 @@
-{
-  "routes": [
-    { "src": "/", "dest": "/french_verb_conjugation_trainer.html" }
-  ]
-}
