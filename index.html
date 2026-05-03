@@ -130,6 +130,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .hist-score{font-size:18px;font-weight:500;color:var(--c3)}
 .hist-detail{margin-top:.6rem;font-size:12px;color:var(--muted)}
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px}
+.hist-delete{opacity:0;transition:opacity .2s;padding:4px 8px;font-size:12px;color:var(--red);cursor:pointer;border:none;background:none;border-radius:6px}
+.hist-card:hover .hist-delete{opacity:1}
+.hist-delete:hover{background:rgba(255,0,0,.05)}
 
 .detail-panel{background:var(--light);border-radius:10px;padding:1rem;margin-top:.8rem;display:none;font-size:12px}
 .detail-panel.open{display:block}
@@ -554,13 +557,16 @@ function renderHistory(){
     const modeStr = modeNames[rec.mode] || '';
     const tenseStr = (rec.tenses||[]).map(t=>TENSE_SHORT[t]||t).join(' - ');
     const durationStr = rec.mode === 'timed' && rec.duration ? `${(rec.duration/1000).toFixed(1)}s/${rec.timeLimit*rec.total}s` : '';
-    return `<div class="hist-card" onclick="toggleDetail(${idx})">
+    return `<div class="hist-card">
       <div class="hist-top">
-        <div>
+        <div onclick="toggleDetail(${idx})" style="flex:1">
           <div style="font-weight:500;font-size:14px">${rec.date}</div>
           <div class="hist-detail">${modeStr && modeStr + ' · '}${tenseStr} · ${rec.total} 题</div>
         </div>
-        <div class="hist-score"><span style="font-size:12px;color:var(--muted);font-weight:400">${durationStr && durationStr + ' · '}</span>${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="hist-score"><span style="font-size:12px;color:var(--muted);font-weight:400">${durationStr && durationStr + ' · '}</span>${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
+          <button class="hist-delete" onclick="deleteHistory(${idx});event.stopPropagation()">删除</button>
+        </div>
       </div>
       <div class="detail-panel" id="det-${idx}">
         ${(rec.results||[]).filter(Boolean).map(r=>`
@@ -576,6 +582,14 @@ function renderHistory(){
 function toggleDetail(idx){
   const el = document.getElementById('det-'+idx);
   el.classList.toggle('open');
+}
+
+function deleteHistory(idx){
+  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
+  history.splice(idx, 1);
+  localStorage.setItem('frVerb_history', JSON.stringify(history));
+  renderHistory();
+  showToast('已删除');
 }
 
 function showToast(msg){
