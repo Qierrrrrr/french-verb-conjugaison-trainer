@@ -425,9 +425,10 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
-document.addEventListener('click', e => {
+document.addEventListener('mousedown', e => {
   const btn = e.target.closest('.accent-btn');
   if (btn) {
+    e.preventDefault();
     const active = document.querySelector('.person-input:focus, .participle-input:focus') ||
                    document.querySelector('.person-input:not([disabled]), .participle-input:not([disabled])');
     if (active) {
