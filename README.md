@@ -1,4 +1,4 @@
-# Conjugaison française - 法语动词变位练习器
+# ConjuTrain - 法语动词变位练习器
 
 *French Verb Conjugation Trainer*
 
