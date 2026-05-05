@@ -47,6 +47,8 @@ html[data-theme='dark']{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0
 .header p{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
 .theme-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:14px}
 .theme-toggle:hover{background:var(--c3);color:#fff;border-color:var(--c3)}
+.lang-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:14px;margin-right:12px}
+.lang-toggle:hover{background:var(--c3);color:#fff;border-color:var(--c3)}
 
 .tabs{display:flex;gap:2px;background:var(--border);padding:3px;border-radius:10px;margin-bottom:1.5rem}
 .tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s}
@@ -212,34 +214,37 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 <div class="header">
   <div class="header-content">
     <h1>Conjugaison française</h1>
-    <p>Entraînement aux conjugaisons</p>
+    <p id="subtitle">Entraînement aux conjugaisons</p>
   </div>
-  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">○</button>
+  <div style="display:flex;align-items:center;">
+    <button class="lang-toggle" id="lang-toggle" onclick="cycleLang()">中</button>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">○</button>
+  </div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('practice')">练习</div>
-  <div class="tab" onclick="switchTab('history')">历史记录</div>
+  <div class="tab active" id="tab-practice-btn" onclick="switchTab('practice')">练习</div>
+  <div class="tab" id="tab-history-btn" onclick="switchTab('history')">历史记录</div>
 </div>
 
 <div id="tab-practice">
   <div id="config-screen">
     <div class="config-grid">
       <div class="config-card">
-        <div class="section-label">题目数量</div>
+        <div class="section-label" id="label-count">题目数量</div>
         <div class="count-row">
           <input type="range" min="3" max="20" value="8" step="1" id="count-slider" oninput="document.getElementById('count-val').textContent=this.value">
           <span class="count-val" id="count-val">8</span>
         </div>
       </div>
       <div class="config-card">
-        <div class="section-label">选择时态</div>
+        <div class="section-label" id="label-tense">选择时态</div>
         <div class="tense-grid" id="tense-chips"></div>
       </div>
       <div class="config-card">
         <div class="section-label-row">
-          <span class="section-label">选择动词</span>
-          <button class="select-all-btn" onclick="toggleAllVerbs()">全选/取消</button>
+          <span class="section-label" id="label-verb">选择动词</span>
+          <button class="select-all-btn" onclick="toggleAllVerbs()" id="btn-select-all">全选/取消</button>
         </div>
         <details class="verb-details" open>
           <summary id="verb-summary">收起</summary>
@@ -247,19 +252,19 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
         </details>
       </div>
       <div class="config-card">
-        <div class="section-label">练习模式</div>
+        <div class="section-label" id="label-mode">练习模式</div>
         <div class="mode-grid" id="mode-chips">
-          <button class="mode-chip on" data-mode="random">随机</button>
-          <button class="mode-chip" data-mode="timed">限时</button>
+          <button class="mode-chip on" data-mode="random" id="mode-random">随机</button>
+          <button class="mode-chip" data-mode="timed" id="mode-timed">限时</button>
         </div>
         <div class="mode-config" id="mode-config" style="display:none">
-          <label>每题限时：</label>
+          <label id="label-time-limit">每题限时：</label>
           <input type="range" min="10" max="120" value="30" step="10" id="time-slider" oninput="document.getElementById('time-val').textContent=this.value">
-          <span id="time-val">30</span>秒
+          <span id="time-val">30</span><span id="time-unit">${lang.seconds}</span>
         </div>
       </div>
     </div>
-    <button class="start-btn" onclick="startSession()">开始练习 →</button>
+    <button class="start-btn" onclick="startSession()" id="btn-start">开始练习 →</button>
   </div>
 
   <div id="quiz-screen" style="display:none">
@@ -280,8 +285,8 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 
 <div id="tab-history" style="display:none">
   <div class="sub-tabs">
-    <div class="sub-tab active" onclick="switchSubTab('mistakes')">错题本</div>
-    <div class="sub-tab" onclick="switchSubTab('records')">练习记录</div>
+    <div class="sub-tab active" onclick="switchSubTab('mistakes')" id="subtab-mistakes">错题本</div>
+    <div class="sub-tab" onclick="switchSubTab('records')" id="subtab-records">练习记录</div>
   </div>
   <div id="sub-mistakes"></div>
   <div id="sub-records" style="display:none"><div class="history-list" id="history-list"></div></div>
@@ -344,7 +349,7 @@ function renderMistakeBook(){
   const entries = computeMistakeBook();
 
   if(!entries.length){
-    container.innerHTML='<div class="empty-state">暂无错题记录。完成练习并保存后，错题将在此显示。</div>';
+    container.innerHTML='<div class="empty-state" id="empty-mistakes">暂无错题记录。完成练习并保存后，错题将在此显示。</div>';
     return;
   }
 
@@ -362,7 +367,7 @@ function renderMistakeBook(){
   const verbsSorted = Object.keys(byVerb).sort();
 
   const statusLabel = {
-    todo:'待复习', learning:'加强中', mastered:'已掌握'
+    todo: lang.todo, learning: lang.learning, mastered: lang.mastered
   };
   const statusClass = {
     todo:'todo', learning:'learning', mastered:'mastered'
@@ -388,9 +393,9 @@ function renderMistakeBook(){
   container.innerHTML = `
     <div class="mistake-summary">
       <span class="mistake-summary-text">
-        待复习 <strong>${todo}</strong> · 加强中 <strong>${learning}</strong> · 已掌握 <strong>${mastered}</strong>
+        ${lang.todo} <strong>${todo}</strong> · ${lang.learning} <strong>${learning}</strong> · ${lang.mastered} <strong>${mastered}</strong>
       </span>
-      ${pending ? `<button class="mistake-practice-btn" id="mistake-practice-btn">练习待复习 (${pending})</button>` : ''}
+      ${pending ? `<button class="mistake-practice-btn" id="mistake-practice-btn">${lang.practicePending} (${pending})</button>` : ''}
     </div>
     ${groups}`;
 
@@ -452,7 +457,7 @@ function initVerbs(){
   const details = document.querySelector('.verb-details');
   const summary = document.getElementById('verb-summary');
   if(details && summary){
-    const updateSummary = ()=>{ summary.textContent = details.open ? '收起动词列表' : `展开动词列表（${activeVerbs.size}/${Object.keys(DB).length} 已选）`; };
+    const updateSummary = ()=>{ summary.textContent = details.open ? lang.collapseVerbs : lang.expandVerbs + ` (${activeVerbs.size}/${Object.keys(DB).length})`; };
     updateSummary();
     details.removeEventListener('toggle', details._toggleHandler);
     details._toggleHandler = updateSummary;
@@ -545,7 +550,7 @@ function startTimer(){
   const timerFill = document.getElementById('timer-fill');
   timerRow.style.display = '';
   timerRow.classList.add('active');
-  timerText.textContent = timeLimit + '秒';
+  timerText.textContent = timeLimit + lang.seconds;
   timerFill.style.width = '100%';
   const startTime = Date.now();
   timerState.interval = setInterval(()=>{
@@ -553,7 +558,7 @@ function startTimer(){
     const remaining = Math.max(0, total - elapsed);
     timerState.remaining = remaining;
     timerFill.style.width = (remaining/total*100) + '%';
-    timerText.textContent = Math.ceil(remaining/1000) + '秒';
+    timerText.textContent = Math.ceil(remaining/1000) + lang.seconds;
     if(remaining <= 0){
       clearInterval(timerState.interval);
       session.results[session.current] = {verb:session.questions[session.current].verb,tense:session.questions[session.current].tense,allRight:false,skipped:true};
@@ -569,7 +574,7 @@ function renderQuestion(){
   const q = session.questions[session.current];
   const total = session.questions.length;
   const pct = Math.round(session.current/total*100);
-  document.getElementById('prog-label').textContent = `第 ${session.current+1} 题，共 ${total} 题`;
+  document.getElementById('prog-label').textContent = `${lang.practice} ${session.current+1} ${lang.questionsTotal} ${total} ${lang.questions}`;
   document.getElementById('prog-pct').textContent = pct+'%';
   document.getElementById('prog-fill').style.width = pct+'%';
   session.checked = false;
@@ -598,9 +603,9 @@ function renderQuestion(){
       ${inputArea}
       <div class="action-row">
         <button class="check-btn" onclick="checkAnswers()">
-          <span class="check-icon">✓</span> 核对答案
+          <span class="check-icon">✓</span> <span id="btn-check">${lang.check}</span>
         </button>
-        <button class="skip-btn" onclick="nextQuestion()">跳过 →</button>
+        <button class="skip-btn" onclick="nextQuestion()" id="btn-skip">${lang.skip}</button>
       </div>
     </div>`;
   document.getElementById('inp-0')?.focus();
@@ -646,7 +651,7 @@ function checkAnswers(){
   const actionRow = document.querySelector('.action-row');
   actionRow.innerHTML = `
     <button class="nav-btn nav-next" onclick="nextQuestion()">
-      ${session.current+1 < session.questions.length ? '下一题 →' : '查看结果 →'}
+      ${session.current+1 < session.questions.length ? '<span id="btn-next">'+lang.next+'</span> →' : '<span id="btn-result">'+lang.result+'</span> →'}
     </button>`;
 
   if(allRight) showToast('全部正确！');
@@ -675,13 +680,13 @@ function showResult(){
 
   let tier, emoji, message;
   if(pct === 100){
-    tier='tier-perfect'; emoji='🏆'; message='满分！完美无缺！';
+    tier='tier-perfect'; emoji='🏆'; message=lang.perfect;
   } else if(pct >= 80){
-    tier='tier-great'; emoji='✨'; message='掌握得很好，继续保持！';
+    tier='tier-great'; emoji='✨'; message=lang.great;
   } else if(pct >= 60){
-    tier='tier-ok'; emoji='📖'; message='还不错，还有提升空间。';
+    tier='tier-ok'; emoji='📖'; message=lang.ok;
   } else {
-    tier='tier-low'; emoji='💪'; message='加油！多练几遍就好了。';
+    tier='tier-low'; emoji='💪'; message=lang.low;
   }
 
   // Build retry-mistakes pool from this session's wrong answers
@@ -695,24 +700,24 @@ function showResult(){
     <div class="result-screen">
       <div class="result-score ${tier}">${emoji} ${pct}%</div>
       <div class="result-message">${message}</div>
-      <div class="result-label" style="margin-top:.25rem">正确率</div>
+      <div class="result-label" style="margin-top:.25rem">${lang.correctRate}</div>
       <div class="result-stats">
-        <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">总题数</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--green)">${correct}</div><div class="stat-lbl">全对</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--red)">${total-correct}</div><div class="stat-lbl">出错</div></div>
+        <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">${lang.questionsTotal} ${lang.questions}</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--green)">${correct}</div><div class="stat-lbl">${lang.correct}</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--red)">${total-correct}</div><div class="stat-lbl">${lang.wrong}</div></div>
       </div>
       <div class="result-actions">
-        <button class="save-btn" id="save-btn" onclick="saveSession()">保存练习</button>
-        <button class="again-btn" onclick="resetToConfig()">再练一次</button>
+        <button class="save-btn" id="save-btn" onclick="saveSession()">${lang.savePractice}</button>
+        <button class="again-btn" onclick="resetToConfig()">${lang.practiceAgain}</button>
       </div>
-      ${retryPool.length ? `<div style="margin-top:.75rem;text-align:center"><button class="retry-btn" id="retry-mistakes-btn">练本次错题 (${retryPool.length} 题)</button></div>` : ''}
+      ${retryPool.length ? `<div style="margin-top:.75rem;text-align:center"><button class="retry-btn" id="retry-mistakes-btn">${lang.retryMistakes} (${retryPool.length} ${lang.questions})</button></div>` : ''}
     </div>`;
 
   // Auto-save for mistake practice sessions
   if(session.autoSave){
     saveSession({hidden:true});
     const saveBtn = document.getElementById('save-btn');
-    saveBtn.textContent = '已自动保存 ✓';
+    saveBtn.textContent = lang.autoSaved;
     saveBtn.disabled = true;
     saveBtn.style.opacity = '0.6';
     saveBtn.style.cursor = 'not-allowed';
@@ -754,17 +759,17 @@ function resetToConfig(){
 function renderHistory(){
   const list = document.getElementById('history-list');
   const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]').filter(rec=>!rec.hidden);
-  if(!history.length){list.innerHTML='<div class="empty-state">暂无练习记录</div>';return;}
+  if(!history.length){list.innerHTML='<div class="empty-state" id="empty-history">'+lang.noRecords+'</div>';return;}
   list.innerHTML = history.map((rec,idx)=>{
     const pct = Math.round(rec.correct/rec.total*100);
-    const modeNames = {random:'随机', timed:'限时'};
+    const modeNames = {random:lang.modeRandom, timed:lang.modeTimed};
     const modeStr = modeNames[rec.mode] || '';
     const tenseStr = (rec.tenses||[]).map(t=>TENSE_SHORT[t]||t).join(' - ');
     const durationStr = rec.mode === 'timed' && rec.duration ? `${(rec.duration/1000).toFixed(1)}s/${rec.timeLimit*rec.total}s` : '';
 
     const detailRows = (rec.results||[]).filter(Boolean).map(r=>{
       const statusClass = r.allRight ? 'ok' : 'err';
-      const statusText = r.allRight ? '✓ 全对' : r.skipped ? '跳过' : '✗ 出错';
+      const statusText = r.allRight ? '✓ ' + lang.correctShort : r.skipped ? lang.skipped : '✗ ' + lang.wrongShort;
 
       // Build per-person answer breakdown for wrong/skipped items
       let personDetail = '';
@@ -794,11 +799,11 @@ function renderHistory(){
       <div class="hist-top">
         <div onclick="toggleDetail(${idx})" style="flex:1">
           <div style="font-weight:500;font-size:14px">${rec.date}</div>
-          <div class="hist-detail">${modeStr && modeStr + ' · '}${tenseStr} · ${rec.total} 题</div>
+          <div class="hist-detail">${modeStr && modeStr + ' · '}${tenseStr} · ${rec.total} ${lang.questions}</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="hist-score"><span style="font-size:12px;color:var(--muted);font-weight:400">${durationStr && durationStr + ' · '}</span>${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
-          <button class="hist-delete" onclick="deleteHistory(${idx});event.stopPropagation()">删除</button>
+          <button class="hist-delete" onclick="deleteHistory(${idx});event.stopPropagation()">${lang.delete}</button>
         </div>
       </div>
       <div class="detail-panel" id="det-${idx}">${detailRows}</div>
@@ -829,6 +834,20 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
+// Override showToast for localized messages
+const originalShowToast = showToast;
+showToast = function(msg){
+  const localized = {
+    '已保存！': lang.saved,
+    '已删除': lang.deleted,
+    '请至少选择一个时态！': lang.noTense,
+    '全部正确！': lang.allCorrect,
+    '时间到！': lang.timeUp,
+    '已自动保存 ✓': lang.autoSaved
+  };
+  originalShowToast(localized[msg] || msg);
+};
+
 function toggleTheme(){
   const html = document.documentElement;
   const btn = document.getElementById('theme-toggle');
@@ -844,6 +863,235 @@ function toggleTheme(){
     localStorage.setItem('frVerb_theme', 'dark');
   }
 }
+
+const LANGS = {
+  zh: {
+    subtitle: '动词变位练习',
+    practice: '练习',
+    history: '历史记录',
+    count: '题目数量',
+    tense: '选择时态',
+    verb: '选择动词',
+    selectAll: '全选/取消',
+    mode: '练习模式',
+    modeRandom: '随机',
+    modeTimed: '限时',
+    timeLimit: '每题限时：',
+    start: '开始练习 →',
+    check: '核对答案',
+    skip: '跳过 →',
+    next: '下一题',
+    result: '查看结果',
+    mistakes: '错题本',
+    records: '练习记录',
+    emptyMistakes: '暂无错题记录。完成练习并保存后，错题将在此显示。',
+    emptyHistory: '暂无练习记录',
+    todo: '待复习',
+    learning: '加强中',
+    mastered: '已掌握',
+    practicePending: '练习待复习',
+    savePractice: '保存练习',
+    practiceAgain: '再练一次',
+    retryMistakes: '练本次错题',
+    questions: '题',
+    questionsTotal: '共',
+    correct: '全对',
+    wrong: '出错',
+    correctRate: '正确率',
+    perfect: '满分！完美无缺！',
+    great: '掌握得很好，继续保持！',
+    ok: '还不错，还有提升空间。',
+    low: '加油！多练几遍就好了。',
+    saved: '已保存！',
+    deleted: '已删除',
+    noTense: '请至少选择一个时态！',
+    allCorrect: '全部正确！',
+    timeUp: '时间到！',
+    autoSaved: '已自动保存 ✓',
+    expandVerbs: '展开动词列表',
+    collapseVerbs: '收起动词列表',
+    seconds: '秒',
+    delete: '删除',
+    correctShort: '全对',
+    wrongShort: '出错',
+    skipped: '跳过'
+  },
+  en: {
+    subtitle: 'Verb Conjugation Practice',
+    practice: 'Practice',
+    history: 'History',
+    count: 'Number of questions',
+    tense: 'Select tenses',
+    verb: 'Select verbs',
+    selectAll: 'Select all',
+    mode: 'Practice mode',
+    modeRandom: 'Random',
+    modeTimed: 'Timed',
+    timeLimit: 'Time per question:',
+    start: 'Start practice →',
+    check: 'Check answers',
+    skip: 'Skip →',
+    next: 'Next',
+    result: 'View results',
+    mistakes: 'Mistakes',
+    records: 'Records',
+    emptyMistakes: 'No mistake records yet. Complete practice and save to see mistakes here.',
+    emptyHistory: 'No practice records',
+    todo: 'To review',
+    learning: 'Learning',
+    mastered: 'Mastered',
+    practicePending: 'Practice pending',
+    savePractice: 'Save practice',
+    practiceAgain: 'Practice again',
+    retryMistakes: 'Retry mistakes',
+    questions: 'questions',
+    questionsTotal: 'of',
+    correct: 'Correct',
+    wrong: 'Wrong',
+    correctRate: 'Accuracy',
+    perfect: 'Perfect! Flawless!',
+    great: 'Well done, keep it up!',
+    ok: 'Not bad, room for improvement.',
+    low: 'Keep going! Practice makes perfect.',
+    saved: 'Saved!',
+    deleted: 'Deleted',
+    noTense: 'Please select at least one tense!',
+    allCorrect: 'All correct!',
+    timeUp: 'Time up!',
+    autoSaved: 'Auto saved ✓',
+    expandVerbs: 'Expand verbs',
+    collapseVerbs: 'Collapse verbs',
+    seconds: 's',
+    delete: 'Delete',
+    correctShort: 'Correct',
+    wrongShort: 'Wrong',
+    skipped: 'Skipped'
+  },
+  fr: {
+    subtitle: 'Entraînement aux conjugaisons',
+    practice: 'Entraînement',
+    history: 'Historique',
+    count: 'Nombre de questions',
+    tense: 'Choisir les temps',
+    verb: 'Choisir les verbes',
+    selectAll: 'Tout sélectionner',
+    mode: 'Mode d\'entraînement',
+    modeRandom: 'Aléatoire',
+    modeTimed: 'Chronométré',
+    timeLimit: 'Temps par question :',
+    start: 'Commencer →',
+    check: 'Vérifier les réponses',
+    skip: 'Passer →',
+    next: 'Suivant',
+    result: 'Voir les résultats',
+    mistakes: 'Erreurs',
+    records: 'Enregistrements',
+    emptyMistakes: 'Aucun enregistrement d\'erreur pour le moment. Complétez l\'entraînement et enregistrez pour voir les erreurs ici.',
+    emptyHistory: 'Aucun enregistrement',
+    todo: 'À réviser',
+    learning: 'En cours',
+    mastered: 'Maîtrisé',
+    practicePending: 'Entraîner les erreurs',
+    savePractice: 'Enregistrer',
+    practiceAgain: 'Réessayer',
+    retryMistakes: 'Réentraîner les erreurs',
+    questions: 'questions',
+    questionsTotal: 'sur',
+    correct: 'Correctes',
+    wrong: 'Erreurs',
+    correctRate: 'Précision',
+    perfect: 'Parfait ! Impeccable !',
+    great: 'Très bien, continuez !',
+    ok: 'Pas mal, encore des progrès à faire.',
+    low: 'Courage ! Ça vient avec la pratique.',
+    saved: 'Enregistré !',
+    deleted: 'Supprimé',
+    noTense: 'Veuillez sélectionner au moins un temps !',
+    allCorrect: 'Toutes correctes !',
+    timeUp: 'Temps écoulé !',
+    autoSaved: 'Enregistré automatiquement ✓',
+    expandVerbs: 'Déplier les verbes',
+    collapseVerbs: 'Replier les verbes',
+    seconds: 's',
+    delete: 'Supprimer',
+    correctShort: 'Correcte',
+    wrongShort: 'Erreur',
+    skipped: 'Passé'
+  }
+};
+
+let currentLang = 'zh';
+let lang = LANGS[currentLang];
+
+function cycleLang(){
+  const langs = ['zh', 'en', 'fr'];
+  const idx = langs.indexOf(currentLang);
+  const nextIdx = (idx + 1) % langs.length;
+  setLang(langs[nextIdx]);
+}
+
+function updateUI(){
+  document.getElementById('subtitle').textContent = lang.subtitle;
+  document.getElementById('tab-practice-btn').textContent = lang.practice;
+  document.getElementById('tab-history-btn').textContent = lang.history;
+  document.getElementById('label-count').textContent = lang.count;
+  document.getElementById('label-tense').textContent = lang.tense;
+  document.getElementById('label-verb').textContent = lang.verb;
+  document.getElementById('btn-select-all').textContent = lang.selectAll;
+  document.getElementById('label-mode').textContent = lang.mode;
+  document.getElementById('mode-random').textContent = lang.modeRandom;
+  document.getElementById('mode-timed').textContent = lang.modeTimed;
+  document.getElementById('label-time-limit').textContent = lang.timeLimit;
+  document.getElementById('btn-start').textContent = lang.start;
+  if(document.getElementById('btn-check')) document.getElementById('btn-check').textContent = lang.check;
+  if(document.getElementById('btn-skip')) document.getElementById('btn-skip').textContent = lang.skip;
+  if(document.getElementById('time-unit')) document.getElementById('time-unit').textContent = lang.seconds;
+  if(document.getElementById('btn-next')) document.getElementById('btn-next').textContent = lang.next;
+  if(document.getElementById('btn-result')) document.getElementById('btn-result').textContent = lang.result;
+  document.getElementById('subtab-mistakes').textContent = lang.mistakes;
+  document.getElementById('subtab-records').textContent = lang.records;
+  if(document.getElementById('empty-mistakes')) document.getElementById('empty-mistakes').textContent = lang.emptyMistakes;
+  if(document.getElementById('empty-history')) document.getElementById('empty-history').textContent = lang.emptyHistory;
+  
+  // Update verb summary
+  const summary = document.getElementById('verb-summary');
+  if(summary){
+    const details = document.querySelector('.verb-details');
+    const text = details?.open ? lang.collapseVerbs : lang.expandVerbs + ` (${activeVerbs.size}/${Object.keys(DB).length})`;
+    summary.textContent = text;
+  }
+  
+  // Update timer text
+  const timerText = document.getElementById('timer-text');
+  if(timerText && timerState.remaining > 0){
+    timerText.textContent = Math.ceil(timerState.remaining/1000) + lang.seconds;
+  }
+}
+
+function setLang(newLang){
+  currentLang = newLang;
+  lang = LANGS[newLang];
+  localStorage.setItem('frVerb_lang', newLang);
+  
+  // Update language toggle button
+  const btn = document.getElementById('lang-toggle');
+  const langCodes = {zh:'中', en:'EN', fr:'FR'};
+  btn.textContent = langCodes[newLang];
+  
+  updateUI();
+  
+  // Re-render mistake book if visible
+  if(document.getElementById('sub-mistakes').style.display !== 'none') renderMistakeBook();
+  
+  // Re-render history if visible
+  if(document.getElementById('sub-records').style.display !== 'none') renderHistory();
+}
+
+// Initialize language on load
+(function(){
+  const saved = localStorage.getItem('frVerb_lang') || 'zh';
+  setLang(saved);
+})();
 
 // Initialize theme on load
 (function(){
