@@ -55,6 +55,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .count-row{display:flex;align-items:center;gap:10px}
 .count-row input[type=range]{flex:1}
 .count-val{font-size:18px;font-weight:500;min-width:28px;text-align:right}
+input[type="range"]{height:6px;-webkit-appearance:none;background:var(--border);border-radius:3px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--c3);border-radius:50%;cursor:pointer;transition:all .2s}
+input[type="range"]::-webkit-slider-thumb:hover{background:var(--acc);transform:scale(1.1)}
+input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3);border-radius:50%;cursor:pointer;border:none}
+.mode-config input[type="range"]{background:rgba(15,52,96,.3);border-radius:3px}
 .result-actions{display:flex;gap:10px;justify-content:center;margin-top:1rem}
 
 .tense-grid{display:flex;flex-wrap:wrap;gap:6px}
@@ -127,8 +132,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .stat-card{background:var(--light);border-radius:10px;padding:1rem;text-align:center}
 .stat-val{font-size:1.4rem;font-weight:500;color:var(--c1)}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
-.save-btn{padding:12px 28px;background:#55756e;color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin:0 6px;transition:all .2s}
-.save-btn:hover{transform:translateY(-1px);background:#4a6660}
+.save-btn{padding:12px 28px;background:var(--c3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin:0 6px;transition:all .2s}
+.save-btn:hover{transform:translateY(-1px);background:var(--acc)}
 .again-btn{padding:12px 28px;background:var(--c3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin:0 6px;transition:all .2s}
 .again-btn:hover{background:var(--acc)}
 
