@@ -382,7 +382,7 @@ function renderMistakeBook(){
     ${groups}`;
 
   if(pending){
-    document.getElementById('mistake-practice-btn').onclick = ()=>startSession(shuffle(practicePool));
+    document.getElementById('mistake-practice-btn').onclick = ()=>startSession(shuffle(practicePool), true);
   }
 }
 
