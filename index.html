@@ -9,7 +9,9 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--c1:#1a1a2e;--c2:#16213e;--c3:#0f3460;--acc:#e94560;--gold:#f5a623;--light:#f8f5f0;--muted:#8a8a9a;--card:#ffffff;--border:#e8e4df;--green:#2d9e6b;--red:#e94560}
 body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);min-height:100vh}
+html[data-theme='dark']{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0eee8;--muted:#7a7a9a}
 @media(prefers-color-scheme:dark){:root{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0eee8;--muted:#7a7a9a}}
+@media(prefers-color-scheme:dark) and (not [data-theme='light']){:root{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0eee8;--muted:#7a7a9a}}
 
 .app{max-width:760px;margin:0 auto;padding:1.5rem 1rem}
 @media(max-width:480px){
@@ -39,9 +41,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);mi
 .hist-top{flex-direction:column;align-items:center;gap:4px;text-align:center}
 .hist-score{font-size:16px}
 }
-.header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.header-content{text-align:center;flex:1}
 .header h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:600;letter-spacing:-0.02em;color:var(--c1)}
 .header p{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+.theme-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:14px}
+.theme-toggle:hover{background:var(--c3);color:#fff;border-color:var(--c3)}
 
 .tabs{display:flex;gap:2px;background:var(--border);padding:3px;border-radius:10px;margin-bottom:1.5rem}
 .tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s}
@@ -205,8 +210,11 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 
 <div class="app">
 <div class="header">
-  <h1>Conjugaison française</h1>
-  <p>Entraînement aux conjugaisons</p>
+  <div class="header-content">
+    <h1>Conjugaison française</h1>
+    <p>Entraînement aux conjugaisons</p>
+  </div>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">○</button>
 </div>
 
 <div class="tabs">
@@ -820,6 +828,37 @@ function showToast(msg){
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), 2000);
 }
+
+function toggleTheme(){
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  const current = html.getAttribute('data-theme');
+  
+  if(current === 'dark'){
+    html.setAttribute('data-theme', 'light');
+    btn.textContent = '○';
+    localStorage.setItem('frVerb_theme', 'light');
+  } else {
+    html.setAttribute('data-theme', 'dark');
+    btn.textContent = '●';
+    localStorage.setItem('frVerb_theme', 'dark');
+  }
+}
+
+// Initialize theme on load
+(function(){
+  const saved = localStorage.getItem('frVerb_theme');
+  const html = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  
+  if(saved){
+    html.setAttribute('data-theme', saved);
+    btn.textContent = saved === 'dark' ? '●' : '○';
+  } else if(window.matchMedia('(prefers-color-scheme: dark)').matches){
+    html.setAttribute('data-theme', 'dark');
+    btn.textContent = '●';
+  }
+})();
 
 // ── Keyboard: navigation + Esc accent-bar ─────────────────────────────────────
 let accentMode = false;
