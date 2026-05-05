@@ -507,12 +507,12 @@ function buildPool(){
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startSession(customPool){
+function startSession(customPool, autoSave){
   const n = parseInt(document.getElementById('count-slider').value);
   timeLimit = parseInt(document.getElementById('time-slider').value);
   const pool = customPool ? customPool : shuffle(buildPool()).slice(0, n);
   if(!pool.length){showToast('请至少选择一个时态！');return;}
-  session = {questions:pool, current:0, checked:false, results:[], startTime:Date.now(), endTime:0};
+  session = {questions:pool, current:0, checked:false, results:[], startTime:Date.now(), endTime:0, autoSave: autoSave || false};
   document.getElementById('config-screen').style.display='none';
   document.getElementById('quiz-screen').style.display='';
   document.getElementById('result-screen').style.display='none';
@@ -689,20 +689,31 @@ function showResult(){
         <div class="stat-card"><div class="stat-val" style="color:var(--red)">${total-correct}</div><div class="stat-lbl">出错</div></div>
       </div>
       <div class="result-actions">
-        <button class="save-btn" onclick="saveSession()">保存练习</button>
+        <button class="save-btn" id="save-btn" onclick="saveSession()">保存练习</button>
         <button class="again-btn" onclick="resetToConfig()">再练一次</button>
       </div>
       ${retryPool.length ? `<div style="margin-top:.75rem;text-align:center"><button class="retry-btn" id="retry-mistakes-btn">练本次错题 (${retryPool.length} 题)</button></div>` : ''}
     </div>`;
 
+  // Auto-save for mistake practice sessions
+  if(session.autoSave){
+    saveSession({hidden:true});
+    const saveBtn = document.getElementById('save-btn');
+    saveBtn.textContent = '已自动保存 ✓';
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.6';
+    saveBtn.style.cursor = 'not-allowed';
+  }
+
   // Attach retry handler after DOM insertion (avoids JSON escaping issues)
   if(retryPool.length){
-    document.getElementById('retry-mistakes-btn').onclick = ()=>startSession(retryPool);
+    document.getElementById('retry-mistakes-btn').onclick = ()=>startSession(retryPool, true);
   }
 }
 
-function saveSession(){
+function saveSession(options){
   const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
+  const opts = options || {};
   const rec = {
     date: new Date().toLocaleString('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}),
     ts: Date.now(),
@@ -712,7 +723,8 @@ function saveSession(){
     results: session.results,
     mode: currentMode,
     timeLimit: timeLimit,
-    duration: session.endTime - session.startTime
+    duration: session.endTime - session.startTime,
+    hidden: opts.hidden || false
   };
   history.unshift(rec);
   localStorage.setItem('frVerb_history', JSON.stringify(history.slice(0,50)));
@@ -728,7 +740,7 @@ function resetToConfig(){
 
 function renderHistory(){
   const list = document.getElementById('history-list');
-  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
+  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]').filter(rec=>!rec.hidden);
   if(!history.length){list.innerHTML='<div class="empty-state">暂无练习记录</div>';return;}
   list.innerHTML = history.map((rec,idx)=>{
     const pct = Math.round(rec.correct/rec.total*100);
