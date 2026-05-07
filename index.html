@@ -156,6 +156,12 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 .hist-card:hover .hist-delete{opacity:1}
 .hist-delete:hover{background:rgba(255,0,0,.05)}
 
+.storage-bar{margin-bottom:1.25rem}
+.storage-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:.4rem}
+.storage-fill{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.storage-used{height:100%;background:linear-gradient(90deg,var(--c3),var(--acc));border-radius:2px;transition:width .3s ease}
+.storage-warning{color:var(--red)}
+
 .detail-panel{background:var(--light);border-radius:10px;padding:1rem;margin-top:.8rem;display:none;font-size:12px}
 .detail-panel.open{display:block}
 .detail-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)}
@@ -284,6 +290,15 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 </div>
 
 <div id="tab-history" style="display:none">
+  <div class="storage-bar" id="storage-bar">
+    <div class="storage-info">
+      <span id="storage-text">存储容量</span>
+      <span id="storage-usage">0/5120 KB</span>
+    </div>
+    <div class="storage-fill">
+      <div class="storage-used" id="storage-used"></div>
+    </div>
+  </div>
   <div class="sub-tabs">
     <div class="sub-tab active" onclick="switchSubTab('mistakes')" id="subtab-mistakes">错题本</div>
     <div class="sub-tab" onclick="switchSubTab('records')" id="subtab-records">练习记录</div>
@@ -413,6 +428,35 @@ function switchSubTab(t){
   if(t==='mistakes') renderMistakeBook();
 }
 
+function getStorageUsage(){
+  let total = 0;
+  for(let i=0; i<localStorage.length; i++){
+    const key = localStorage.key(i);
+    const value = localStorage.getItem(key);
+    total += key.length + value.length;
+  }
+  return total;
+}
+
+function updateStorageDisplay(){
+  const usage = getStorageUsage();
+  const max = 5 * 1024 * 1024; // 5MB in bytes
+  const usedKB = Math.round(usage / 1024);
+  const maxKB = 5120; // 5MB in KB
+  const percent = Math.min((usage / max) * 100, 100);
+  
+  const usageEl = document.getElementById('storage-usage');
+  const usedEl = document.getElementById('storage-used');
+  const textEl = document.getElementById('storage-text');
+  
+  if(usageEl) usageEl.textContent = `${usedKB}/${maxKB} KB`;
+  if(usedEl) usedEl.style.width = `${percent}%`;
+  if(textEl) {
+    textEl.textContent = lang.storage || '存储容量';
+    textEl.className = percent > 90 ? 'storage-warning' : '';
+  }
+}
+
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['practice','history'][i]===t)});
   document.getElementById('tab-practice').style.display = t==='practice'?'':'none';
@@ -424,6 +468,7 @@ function switchTab(t){
       renderHistory();
       historyDirty = false;
     }
+    updateStorageDisplay();
   }
 }
 
@@ -745,8 +790,9 @@ function saveSession(options){
     hidden: opts.hidden || false
   };
   history.unshift(rec);
-  localStorage.setItem('frVerb_history', JSON.stringify(history.slice(0,50)));
+  localStorage.setItem('frVerb_history', JSON.stringify(history.slice(0,200)));
   historyDirty = true;
+  updateStorageDisplay();
   showToast('已保存！');
 }
 
@@ -822,6 +868,7 @@ function deleteHistory(idx){
   localStorage.setItem('frVerb_history', JSON.stringify(history));
   historyDirty = true;
   renderHistory();
+  updateStorageDisplay();
   // Re-render mistake book only if it's currently visible
   if(document.getElementById('sub-mistakes').style.display !== 'none') renderMistakeBook();
   showToast('已删除');
@@ -915,7 +962,8 @@ const LANGS = {
     correctShort: '全对',
     wrongShort: '出错',
     skipped: '跳过',
-    emptyInput: '（空）'
+    emptyInput: '（空）',
+    storage: '存储容量'
   },
   en: {
     subtitle: 'Verb Conjugation Practice',
@@ -967,7 +1015,8 @@ const LANGS = {
     correctShort: 'Correct',
     wrongShort: 'Wrong',
     skipped: 'Skipped',
-    emptyInput: '(empty)'
+    emptyInput: '(empty)',
+    storage: 'Storage'
   },
   fr: {
     subtitle: 'Entraînement aux conjugaisons',
@@ -1019,7 +1068,8 @@ const LANGS = {
     correctShort: 'Correcte',
     wrongShort: 'Erreur',
     skipped: 'Passé',
-    emptyInput: '(vide)'
+    emptyInput: '(vide)',
+    storage: 'Stockage'
   }
 };
 
