@@ -1,54 +1,15 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>ConjuTrain - French Verb Conjugation</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--c1:#1a1a2e;--c2:#16213e;--c3:#0f3460;--acc:#e94560;--gold:#f5a623;--light:#f8f5f0;--muted:#8a8a9a;--card:#ffffff;--border:#e8e4df;--green:#2d9e6b;--red:#e94560}
 body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--c1);min-height:100vh}
-html[data-theme='dark']{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0eee8;--muted:#7a7a9a}
 @media(prefers-color-scheme:dark){:root{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0eee8;--muted:#7a7a9a}}
-@media(prefers-color-scheme:dark) and (not [data-theme='light']){:root{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0eee8;--muted:#7a7a9a}}
 
 .app{max-width:760px;margin:0 auto;padding:1.5rem 1rem}
-@media(max-width:480px){
-.app{padding:1rem .75rem}
-.header h1{font-size:1.5rem}
-.header p{font-size:11px}
-.question-card{padding:1rem}
-.verb-name{font-size:1.6rem}
-.tense-badge{font-size:10px;padding:2px 8px}
-.person-grid{display:grid !important;grid-template-columns:1fr !important;gap:8px !important}
-.person-row{padding:10px 14px;gap:12px}
-.person-label{min-width:44px;font-size:13px}
-.person-input{font-size:16px;padding:6px 0}
-.config-grid{grid-template-columns:1fr}
-.tense-grid{gap:4px}
-.tense-chip{font-size:11px;padding:6px 8px}
-.progress-info{font-size:11px}
-.action-row{flex-direction:column;gap:8px}
-.action-row button{width:100%}
-.check-btn,.skip-btn,.nav-btn{padding:14px}
-.result-stats{grid-template-columns:1fr;gap:8px}
-.result-score{font-size:2.5rem}
-.save-btn,.again-btn{width:auto;margin:0 6px;flex:1}
-.accent-bar{gap:3px;padding:6px}
-.accent-btn{font-size:14px;padding:8px;min-width:36px;min-height:36px}
-.participle-input{font-size:16px}
-.hist-top{flex-direction:column;align-items:center;gap:4px;text-align:center}
-.hist-score{font-size:16px}
-}
-.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
-.header-content{text-align:center;flex:1}
+.header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
 .header h1{font-family:'Playfair Display',serif;font-size:2rem;font-weight:600;letter-spacing:-0.02em;color:var(--c1)}
 .header p{font-size:13px;color:var(--muted);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
-.theme-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:14px}
-.theme-toggle:hover{background:var(--c3);color:#fff;border-color:var(--c3)}
-.lang-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:14px;margin-right:12px}
-.lang-toggle:hover{background:var(--c3);color:#fff;border-color:var(--c3)}
 
 .tabs{display:flex;gap:2px;background:var(--border);padding:3px;border-radius:10px;margin-bottom:1.5rem}
 .tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s}
@@ -62,41 +23,16 @@ html[data-theme='dark']{--light:#141420;--card:#1e1e30;--border:#2e2e45;--c1:#f0
 .count-row{display:flex;align-items:center;gap:10px}
 .count-row input[type=range]{flex:1}
 .count-val{font-size:18px;font-weight:500;min-width:28px;text-align:right}
-input[type="range"]{height:6px;-webkit-appearance:none;background:var(--border);border-radius:3px;outline:none}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--c3);border-radius:50%;cursor:pointer;transition:all .2s}
-input[type="range"]::-webkit-slider-thumb:hover{background:var(--acc);transform:scale(1.1)}
-input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3);border-radius:50%;cursor:pointer;border:none}
-.mode-config input[type="range"]{background:rgba(15,52,96,.3);border-radius:3px}
-.result-actions{display:flex;gap:10px;justify-content:center;margin-top:1rem}
 
 .tense-grid{display:flex;flex-wrap:wrap;gap:6px}
-.verb-grid{display:flex;flex-wrap:wrap;gap:6px}
-.verb-details{margin-top:.25rem}
-.verb-details summary{font-size:12px;color:var(--c3);cursor:pointer;user-select:none;list-style:none;display:flex;align-items:center;gap:4px;padding:4px 0;width:fit-content}
-.verb-details summary::-webkit-details-marker{display:none}
-.verb-details summary::before{content:'▶';font-size:9px;transition:transform .2s;display:inline-block}
-.verb-details[open] summary::before{transform:rotate(90deg)}
-.verb-details[open] .verb-grid{margin-top:.5rem}
-.section-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
-.select-all-btn{font-size:12px;padding:4px 10px;background:transparent;border:1px solid var(--c3);color:var(--c3);border-radius:6px;cursor:pointer;transition:all .2s}
-.select-all-btn:hover{background:var(--c3);color:#fff}
-.mode-grid{display:flex;gap:6px;margin-top:.5rem}
-.mode-chip{flex:1;padding:8px;text-align:center;font-size:13px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);color:var(--muted);transition:all .2s}
-.mode-chip.on{background:var(--c3);color:#fff;border-color:var(--c3)}
-.mode-config{margin-top:.5rem;padding:.5rem;background:var(--light);border-radius:8px;font-size:13px;color:var(--muted)}
-.tense-chip{font-size:12px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s;user-select:none;min-width:60px;text-align:center}
-.tense-chip.on{background:var(--c3);border-color:var(--c3);color:#fff;font-weight:500}
+.tense-chip{font-size:12px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);cursor:pointer;color:var(--muted);background:var(--card);transition:all .2s;user-select:none}
+.tense-chip.on{background:var(--c3);border-color:var(--c3);color:#fff}
 
 .start-btn{width:100%;padding:14px;background:var(--c3);color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.02em}
 .start-btn:hover{background:var(--acc);transform:translateY(-1px)}
 
 .progress-bar{background:var(--border);border-radius:4px;height:4px;margin-bottom:1.5rem;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--c3),var(--acc));border-radius:4px;transition:width .4s ease}
-.timer-row{display:flex;align-items:center;gap:8px;margin-bottom:1rem;opacity:0}
-.timer-row.active{opacity:1}
-.timer-text{font-size:12px;color:var(--muted);min-width:32px}
-.timer-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-.timer-fill{height:100%;background:linear-gradient(90deg,var(--c3),var(--acc));width:100%;transition:width .1s linear}
 .progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:.5rem}
 
 .question-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1rem}
@@ -105,20 +41,20 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 .tense-badge{display:inline-block;background:var(--c3);color:#fff;font-size:11px;padding:3px 12px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-top:.4rem}
 
 .person-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.person-row{display:flex;align-items:center;gap:8px;background:var(--light);border-radius:10px;padding:8px 10px;flex-wrap:nowrap}
-.person-label{font-size:12px;font-weight:500;color:var(--muted);min-width:50px;letter-spacing:.04em;text-transform:uppercase;flex-shrink:0}
-.person-input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--c1);outline:none;min-width:0}
+.person-row{display:flex;align-items:center;gap:8px;background:var(--light);border-radius:10px;padding:8px 10px}
+.person-label{font-size:12px;font-weight:500;color:var(--muted);min-width:36px;letter-spacing:.04em;text-transform:uppercase}
+.person-input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--c1);outline:none}
 .person-input::placeholder{color:#bbb}
 .person-row.correct{background:#f0faf5;border:1px solid #b7dfd0}
 .person-row.wrong{background:#fff5f5;border:1px solid #f5c0c0}
 .person-row.correct .person-label{color:var(--green)}
 .person-row.wrong .person-label{color:var(--red)}
-.answer-hint{font-size:11px;color:var(--red);display:none}
+.answer-hint{font-size:12px;color:var(--green);margin-top:2px;display:none}
 .person-row.wrong .answer-hint{display:block;color:var(--red)}
 
 .action-row{display:flex;gap:10px;margin-top:1rem}
-.check-btn{flex:1;padding:12px;background:var(--c3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
-.check-btn:hover{background:var(--acc)}
+.check-btn{flex:1;padding:12px;background:var(--c1);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.check-btn:hover{background:var(--c3)}
 .check-icon{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:10px}
 .skip-btn{padding:12px 16px;background:transparent;border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s}
 .skip-btn:hover{border-color:var(--c3);color:var(--c3)}
@@ -129,18 +65,13 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 
 .result-screen{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center}
 .result-score{font-family:'Playfair Display',serif;font-size:3.5rem;font-weight:600;color:var(--c3);line-height:1}
-.result-score.tier-perfect{color:var(--gold)}
-.result-score.tier-great{color:var(--green)}
-.result-score.tier-ok{color:var(--c3)}
-.result-score.tier-low{color:var(--red)}
-.result-message{font-size:15px;margin-top:.6rem;font-weight:500}
 .result-label{font-size:13px;color:var(--muted);margin-top:.3rem;letter-spacing:.04em;text-transform:uppercase}
 .result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:1.5rem 0}
 .stat-card{background:var(--light);border-radius:10px;padding:1rem;text-align:center}
 .stat-val{font-size:1.4rem;font-weight:500;color:var(--c1)}
 .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
-.save-btn{padding:12px 28px;background:var(--c3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin:0 6px;transition:all .2s}
-.save-btn:hover{transform:translateY(-1px);background:var(--acc)}
+.save-btn{padding:12px 28px;background:var(--gold);color:var(--c1);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin:0 6px;transition:all .2s}
+.save-btn:hover{transform:translateY(-1px)}
 .again-btn{padding:12px 28px;background:var(--c3);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin:0 6px;transition:all .2s}
 .again-btn:hover{background:var(--acc)}
 
@@ -152,9 +83,6 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 .hist-score{font-size:18px;font-weight:500;color:var(--c3)}
 .hist-detail{margin-top:.6rem;font-size:12px;color:var(--muted)}
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px}
-.hist-delete{opacity:0;transition:opacity .2s;padding:4px 8px;font-size:12px;color:var(--red);cursor:pointer;border:none;background:none;border-radius:6px}
-.hist-card:hover .hist-delete{opacity:1}
-.hist-delete:hover{background:rgba(255,0,0,.05)}
 
 .detail-panel{background:var(--light);border-radius:10px;padding:1rem;margin-top:.8rem;display:none;font-size:12px}
 .detail-panel.open{display:block}
@@ -164,107 +92,38 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 .di-res{font-weight:500}
 .di-res.ok{color:var(--green)}
 .di-res.err{color:var(--red)}
-.di-person-list{margin-top:4px;display:flex;flex-direction:column;gap:2px}
-.di-person-row{display:flex;gap:6px;font-size:11px;padding:4px 8px;border-radius:6px;margin-bottom:2px}
-.di-person-row.ok{background:rgba(74,222,128,.1);color:#4ade80}
-.di-person-row.err{background:rgba(233,69,96,.1)}
-.di-person-label{color:var(--muted);min-width:56px;flex-shrink:0}
-.di-person-user{flex:1}
-.di-person-user.wrong{color:#ff6b6b;text-decoration:line-through}
-.di-person-correct{color:#4ade80;margin-left:4px}
 
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);background:var(--c1);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;opacity:0;transition:all .4s;pointer-events:none;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-.accent-bar{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:1rem;padding:8px;background:var(--light);border-radius:10px}
-.accent-btn{font-size:16px;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--c1);transition:all .15s;min-width:36px;text-align:center;-webkit-appearance:none}
-.accent-btn:hover,.accent-btn:active{background:var(--c3);color:#fff;border-color:var(--c3)}
-.accent-btn.selected{background:var(--c3);color:#fff;border-color:var(--c3);box-shadow:0 0 0 2px rgba(15,52,96,.3)}
-
-/* Sub-tabs inside history */
-.sub-tabs{display:flex;gap:2px;background:var(--border);padding:2px;border-radius:8px;margin-bottom:1rem}
-.sub-tab{flex:1;padding:6px;text-align:center;font-size:12px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--muted);transition:all .2s}
-.sub-tab.active{background:var(--card);color:var(--c1);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-
-/* Mistake book */
-.mistake-summary{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:1rem}
-.mistake-summary-text{font-size:13px;color:var(--muted)}
-.mistake-summary-text strong{color:var(--c1)}
-.mistake-practice-btn{padding:7px 14px;background:var(--c3);color:#fff;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
-.mistake-practice-btn:hover{background:var(--acc)}
-.mistake-verb-group{margin-bottom:.75rem}
-.mistake-verb-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--c1);padding:.4rem 0 .25rem;border-bottom:1px solid var(--border);margin-bottom:.35rem}
-.mistake-tense-row{display:flex;justify-content:space-between;align-items:center;padding:5px 4px;font-size:13px}
-.mistake-tense-name{color:var(--muted)}
-.mistake-status{font-size:11px;font-weight:600;letter-spacing:.04em}
-.mistake-status.todo{color:var(--red)}
-.mistake-status.learning{color:#d4820a}
-.mistake-status.mastered{color:var(--green)}
-
-/* Result retry button */
-.retry-btn{padding:12px 20px;background:var(--light);color:var(--c1);border:1px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
-.retry-btn:hover{border-color:var(--acc);color:var(--acc)}
-
-.participle-row{display:flex;align-items:center;justify-content:center;gap:12px;padding:16px 0}
-.participle-input{font-family:'DM Sans',sans-serif;font-size:18px;color:var(--c1);border:none;border-bottom:2px solid var(--c3);background:transparent;outline:none;text-align:center;width:120px;padding:4px 8px;-webkit-appearance:none}
-.participle-input::placeholder{color:#bbb}
 </style>
 
 <div class="app">
 <div class="header">
-  <div class="header-content">
-    <h1>Conjugaison française</h1>
-    <p id="subtitle">Entraînement aux conjugaisons</p>
-  </div>
-  <div style="display:flex;align-items:center;">
-    <button class="lang-toggle" id="lang-toggle" onclick="cycleLang()">中</button>
-    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()">○</button>
-  </div>
+  <h1>Conjugaison française</h1>
+  <p>Entraînement aux conjugaisons</p>
 </div>
 
 <div class="tabs">
-  <div class="tab active" id="tab-practice-btn" onclick="switchTab('practice')">练习</div>
-  <div class="tab" id="tab-history-btn" onclick="switchTab('history')">历史记录</div>
+  <div class="tab active" onclick="switchTab('practice')">练习</div>
+  <div class="tab" onclick="switchTab('history')">历史记录</div>
 </div>
 
 <div id="tab-practice">
   <div id="config-screen">
     <div class="config-grid">
       <div class="config-card">
-        <div class="section-label" id="label-count">题目数量</div>
+        <div class="section-label">题目数量</div>
         <div class="count-row">
           <input type="range" min="3" max="20" value="8" step="1" id="count-slider" oninput="document.getElementById('count-val').textContent=this.value">
           <span class="count-val" id="count-val">8</span>
         </div>
       </div>
       <div class="config-card">
-        <div class="section-label" id="label-tense">选择时态</div>
+        <div class="section-label">选择时态</div>
         <div class="tense-grid" id="tense-chips"></div>
       </div>
-      <div class="config-card">
-        <div class="section-label-row">
-          <span class="section-label" id="label-verb">选择动词</span>
-          <button class="select-all-btn" onclick="toggleAllVerbs()" id="btn-select-all">全选/取消</button>
-        </div>
-        <details class="verb-details" open>
-          <summary id="verb-summary">收起</summary>
-          <div class="verb-grid" id="verb-chips"></div>
-        </details>
-      </div>
-      <div class="config-card">
-        <div class="section-label" id="label-mode">练习模式</div>
-        <div class="mode-grid" id="mode-chips">
-          <button class="mode-chip on" data-mode="random" id="mode-random">随机</button>
-          <button class="mode-chip" data-mode="timed" id="mode-timed">限时</button>
-        </div>
-        <div class="mode-config" id="mode-config" style="display:none">
-          <label id="label-time-limit">每题限时：</label>
-          <input type="range" min="10" max="120" value="30" step="10" id="time-slider" oninput="document.getElementById('time-val').textContent=this.value">
-          <span id="time-val">30</span><span id="time-unit">${lang.seconds}</span>
-        </div>
-      </div>
     </div>
-    <button class="start-btn" onclick="startSession()" id="btn-start">开始练习 →</button>
+    <button class="start-btn" onclick="startSession()">开始练习 →</button>
   </div>
 
   <div id="quiz-screen" style="display:none">
@@ -273,10 +132,6 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
       <span id="prog-pct">0%</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-    <div class="timer-row" id="timer-row" style="display:none">
-      <span class="timer-text" id="timer-text">30秒</span>
-      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
-    </div>
     <div id="question-area"></div>
   </div>
 
@@ -284,12 +139,7 @@ input[type="range"]::-moz-range-thumb{width:16px;height:16px;background:var(--c3
 </div>
 
 <div id="tab-history" style="display:none">
-  <div class="sub-tabs">
-    <div class="sub-tab active" onclick="switchSubTab('mistakes')" id="subtab-mistakes">错题本</div>
-    <div class="sub-tab" onclick="switchSubTab('records')" id="subtab-records">练习记录</div>
-  </div>
-  <div id="sub-mistakes"></div>
-  <div id="sub-records" style="display:none"><div class="history-list" id="history-list"></div></div>
+  <div class="history-list" id="history-list"></div>
 </div>
 </div>
 
@@ -303,196 +153,16 @@ const TENSE_SHORT = {'Présent':'Prés.','Imparfait':'Imp.','Passé simple':'Pas
 const DB = {"Acheter":{"Présent":["achète","achètes","achète","achetons","achetez","achètent"],"Imparfait":["achetais","achetais","achetait","achetions","achetiez","achetaient"],"Passé simple":["achetai","achetas","acheta","achetâmes","achetâtes","achetèrent"],"Subjonctif":["achète","achètes","achète","achetions","achetiez","achètent"],"Conditionnel":["achèterais","achèterais","achèterait","achèterions","achèteriez","achèteraient"],"Participe passé":["acheté","","","","",""],"Participe présent":["achetant","","","","",""]},"Acquérir":{"Présent":["acquiers","acquiers","acquiert","acquérons","acquérez","acquièrent"],"Imparfait":["acquérais","acquérais","acquérait","acquérions","acquériez","acquéraient"],"Passé simple":["acquis","acquis","acquit","acquîmes","acquîtes","acquirent"],"Subjonctif":["acquière","acquières","acquière","acquérions","acquériez","acquièrent"],"Conditionnel":["acquerrais","acquerrais","acquerrait","acquerrions","acquerriez","acquerraient"],"Participe passé":["acquis","","","","",""],"Participe présent":["acquérant","","","","",""]},"Aimer":{"Présent":["aime","aimes","aime","aimons","aimez","aiment"],"Imparfait":["aimais","aimais","aimait","aimions","aimiez","aimaient"],"Passé simple":["aimai","aimas","aima","aimâmes","aimâtes","aimèrent"],"Subjonctif":["aime","aimes","aime","aimions","aimiez","aiment"],"Conditionnel":["aimerais","aimerais","aimerait","aimerions","aimeriez","aimeraient"],"Participe passé":["aimé","","","","",""],"Participe présent":["aimant","","","","",""]},"Aller":{"Présent":["vais","vas","va","allons","allez","vont"],"Imparfait":["allais","allais","allait","allions","alliez","allaient"],"Passé simple":["allai","allas","alla","allâmes","allâtes","allèrent"],"Subjonctif":["aille","ailles","aille","allions","alliez","aillent"],"Conditionnel":["irais","irais","irait","irions","iriez","iraient"],"Participe passé":["allé","","","","",""],"Participe présent":["allant","","","","",""]},"Appeler":{"Présent":["appelle","appelles","appelle","appelons","appelez","appellent"],"Imparfait":["appelais","appelais","appelait","appelions","appeliez","appelaient"],"Passé simple":["appelai","appelas","appela","appelâmes","appelâtes","appelèrent"],"Subjonctif":["appelle","appelles","appelle","appelions","appeliez","appellent"],"Conditionnel":["appellerais","appellerais","appellerait","appellerions","appelleriez","appelleraient"],"Participe passé":["appelé","","","","",""],"Participe présent":["appelant","","","","",""]},"Asseoir":{"Présent":["assieds","assieds","assied","asseyons","asseyez","asseyent"],"Imparfait":["asseyais","asseyais","asseyait","asseyions","asseyiez","asseyaient"],"Passé simple":["assis","assis","assit","assîmes","assîtes","assirent"],"Subjonctif":["asseye","asseyes","asseye","asseyions","asseyiez","asseyent"],"Conditionnel":["assiérais","assiérais","assiérait","assiérions","assiériez","assiéraient"],"Participe passé":["assis","","","","",""],"Participe présent":["asseyant","","","","",""]},"Avoir":{"Présent":["ai","as","a","avons","avez","ont"],"Imparfait":["avais","avais","avait","avions","aviez","avaient"],"Passé simple":["eus","eus","eut","eûmes","eûtes","eurent"],"Subjonctif":["aie","aies","ait","ayons","ayez","aient"],"Conditionnel":["aurais","aurais","aurait","aurions","auriez","auraient"],"Participe passé":["eu","","","","",""],"Participe présent":["ayant","","","","",""]},"Battre":{"Présent":["bats","bats","bat","battons","battez","battent"],"Imparfait":["battais","battais","battait","battions","battiez","battaient"],"Passé simple":["battis","battis","battit","battîmes","battîtes","battirent"],"Subjonctif":["batte","battes","batte","battions","battiez","battent"],"Conditionnel":["battrais","battrais","battrait","battrions","battriez","battraient"],"Participe passé":["battu","","","","",""],"Participe présent":["battant","","","","",""]},"Boire":{"Présent":["bois","bois","boit","buvons","buvez","boivent"],"Imparfait":["buvais","buvais","buvait","buvions","buviez","buvaient"],"Passé simple":["bus","bus","but","bûmes","bûtes","burent"],"Subjonctif":["boive","boives","boive","buvions","buviez","boivent"],"Conditionnel":["boirais","boirais","boirait","boirions","boiriez","boiraient"],"Participe passé":["bu","","","","",""],"Participe présent":["buvant","","","","",""]},"Bouillir":{"Présent":["bous","bous","bout","bouillons","bouillez","bouillent"],"Imparfait":["bouillais","bouillais","bouillait","bouillions","bouilliez","bouillaient"],"Passé simple":["bouillis","bouillis","bouillit","bouillîmes","bouillîtes","bouillirent"],"Subjonctif":["bouille","bouilles","bouille","bouillions","bouilliez","bouillent"],"Conditionnel":["bouillirais","bouillirais","bouillirait","bouillirions","bouilliriez","bouilliraient"],"Participe passé":["bouilli","","","","",""],"Participe présent":["bouillant","","","","",""]},"Céder":{"Présent":["cède","cèdes","cède","cédons","cédez","cèdent"],"Imparfait":["cédais","cédais","cédait","cédions","cédiez","cédaient"],"Passé simple":["cédai","cédas","céda","cédâmes","cédâtes","cédèrent"],"Subjonctif":["cède","cèdes","cède","cédions","cédiez","cèdent"],"Conditionnel":["céderais","céderais","céderait","céderions","céderiez","céderaient"],"Participe passé":["cédé","","","","",""],"Participe présent":["cédant","","","","",""]},"Conclure":{"Présent":["conclus","conclus","conclut","concluons","concluez","concluent"],"Imparfait":["concluais","concluais","concluait","concluions","concluiez","concluaient"],"Passé simple":["conclus","conclus","conclut","conclûmes","conclûtes","conclurent"],"Subjonctif":["conclue","conclues","conclue","concluions","concluiez","concluent"],"Conditionnel":["conclurais","conclurais","conclurait","conclurions","concluriez","concluraient"],"Participe passé":["conclu","","","","",""],"Participe présent":["concluant","","","","",""]},"Conduire":{"Présent":["conduis","conduis","conduit","conduisons","conduisez","conduisent"],"Imparfait":["conduisais","conduisais","conduisait","conduisions","conduisiez","conduisaient"],"Passé simple":["conduisis","conduisis","conduisit","conduisîmes","conduisîtes","conduisirent"],"Subjonctif":["conduise","conduises","conduise","conduisions","conduisiez","conduisent"],"Conditionnel":["conduirais","conduirais","conduirait","conduirions","conduiriez","conduiraient"],"Participe passé":["conduit","","","","",""],"Participe présent":["conduisant","","","","",""]},"Connaître":{"Présent":["connais","connais","connaît","connaissons","connaissez","connaissent"],"Imparfait":["connaissais","connaissais","connaissait","connaissions","connaissiez","connaissaient"],"Passé simple":["connus","connus","connut","connûmes","connûtes","connurent"],"Subjonctif":["connaisse","connaisses","connaisse","connaissions","connaissiez","connaissent"],"Conditionnel":["connaîtrais","connaîtrais","connaîtrait","connaîtrions","connaîtriez","connaîtraient"],"Participe passé":["connu","","","","",""],"Participe présent":["connaissant","","","","",""]},"Coudre":{"Présent":["couds","couds","coud","cousons","cousez","cousent"],"Imparfait":["cousais","cousais","cousait","cousions","cousiez","cousaient"],"Passé simple":["cousis","cousis","cousit","cousîmes","cousîtes","cousirent"],"Subjonctif":["couse","couses","couse","cousions","cousiez","cousent"],"Conditionnel":["coudrais","coudrais","coudrait","coudrions","coudriez","coudraient"],"Participe passé":["cousu","","","","",""],"Participe présent":["cousant","","","","",""]},"Courir":{"Présent":["cours","cours","court","courons","courez","courent"],"Imparfait":["courais","courais","courait","courions","couriez","couraient"],"Passé simple":["courus","courus","courut","courûmes","courûtes","coururent"],"Subjonctif":["coure","coures","coure","courions","couriez","courent"],"Conditionnel":["courrais","courrais","courrait","courrions","courriez","courraient"],"Participe passé":["couru","","","","",""],"Participe présent":["courant","","","","",""]},"Craindre":{"Présent":["crains","crains","craint","craignons","craignez","craignent"],"Imparfait":["craignais","craignais","craignait","craignions","craigniez","craignaient"],"Passé simple":["craignis","craignis","craignit","craignîmes","craignîtes","craignirent"],"Subjonctif":["craigne","craignes","craigne","craignions","craigniez","craignent"],"Conditionnel":["craindrais","craindrais","craindrait","craindrions","craindriez","craindraient"],"Participe passé":["craint","","","","",""],"Participe présent":["craignant","","","","",""]},"Croire":{"Présent":["crois","crois","croit","croyons","croyez","croient"],"Imparfait":["croyais","croyais","croyait","croyions","croyiez","croyaient"],"Passé simple":["crus","crus","crut","crûmes","crûtes","crurent"],"Subjonctif":["croie","croies","croie","croyions","croyiez","croient"],"Conditionnel":["croirais","croirais","croirait","croirions","croiriez","croiraient"],"Participe passé":["cru","","","","",""],"Participe présent":["croyant","","","","",""]},"Croître":{"Présent":["croîs","croîs","croît","croissons","croissez","croissent"],"Imparfait":["croissais","croissais","croissait","croissions","croissiez","croissaient"],"Passé simple":["crûs","crûs","crût","crûmes","crûtes","crûrent"],"Subjonctif":["croisse","croisses","croisse","croissions","croissiez","croissent"],"Conditionnel":["croîtrais","croîtrais","croîtrait","croîtrions","croîtriez","croîtraient"],"Participe passé":["crû","","","","",""],"Participe présent":["croissant","","","","",""]},"Cueillir":{"Présent":["cueille","cueilles","cueille","cueillons","cueillez","cueillent"],"Imparfait":["cueillais","cueillais","cueillait","cueillions","cueilliez","cueillaient"],"Passé simple":["cueillis","cueillis","cueillit","cueillîmes","cueillîtes","cueillirent"],"Subjonctif":["cueille","cueilles","cueille","cueillions","cueilliez","cueillent"],"Conditionnel":["cueillerais","cueillerais","cueillerait","cueillerions","cueilleriez","cueilleraient"],"Participe passé":["cueilli","","","","",""],"Participe présent":["cueillant","","","","",""]},"Devoir":{"Présent":["dois","dois","doit","devons","devez","doivent"],"Imparfait":["devais","devais","devait","devions","deviez","devaient"],"Passé simple":["dus","dus","dut","dûmes","dûtes","durent"],"Subjonctif":["doive","doives","doive","devions","deviez","doivent"],"Conditionnel":["devrais","devrais","devrait","devrions","devriez","devraient"],"Participe passé":["du","","","","",""],"Participe présent":["devant","","","","",""]},"Dépêcher":{"Présent":["dépêche","dépêches","dépêche","dépêchons","dépêchez","dépêchent"],"Imparfait":["dépêchais","dépêchais","dépêchait","dépêchions","dépêchiez","dépêchaient"],"Passé simple":["dépêchai","dépêchas","dépêcha","dépêchâmes","dépêchâtes","dépêchèrent"],"Subjonctif":["dépêche","dépêches","dépêche","dépêchions","dépêchiez","dépêchent"],"Conditionnel":["dépêcherais","dépêcherais","dépêcherait","dépêcherions","dépêcheriez","dépêcheraient"],"Participe passé":["dépêché","","","","",""],"Participe présent":["dépêchant","","","","",""]},"Dire":{"Présent":["dis","dis","dit","disons","dites","disent"],"Imparfait":["disais","disais","disait","disions","disiez","disaient"],"Passé simple":["dis","dis","dit","dîmes","dîtes","dirent"],"Subjonctif":["dise","dises","dise","disions","disiez","disent"],"Conditionnel":["dirais","dirais","dirait","dirions","diriez","diraient"],"Participe passé":["dit","","","","",""],"Participe présent":["disant","","","","",""]},"Écrire":{"Présent":["écris","écris","écrit","écrivons","écrivez","écrivent"],"Imparfait":["écrivais","écrivais","écrivait","écrivions","écriviez","écrivaient"],"Passé simple":["écrivis","écrivis","écrivit","écrivîmes","écrivîtes","écrivirent"],"Subjonctif":["écrive","écrives","écrive","écrivions","écriviez","écrivent"],"Conditionnel":["écrirais","écrirais","écrirait","écririons","écririez","écriraient"],"Participe passé":["écrit","","","","",""],"Participe présent":["écrivant","","","","",""]},"Émouvoir":{"Présent":["émeus","émeus","émeut","émouvons","émouvez","émeuvent"],"Imparfait":["émouvais","émouvais","émouvait","émouvions","émouviez","émouvaient"],"Passé simple":["émus","émus","émut","émûmes","émûtes","émurent"],"Subjonctif":["émeuve","émeuves","émeuve","émouvions","émouviez","émeuvent"],"Conditionnel":["émouvrais","émouvrais","émouvrait","émouvrions","émouvriez","émouvraient"],"Participe passé":["ému","","","","",""],"Participe présent":["émouvant","","","","",""]},"Enlever":{"Présent":["enlève","enlèves","enlève","enlevons","enlevez","enlèvent"],"Imparfait":["enlevais","enlevais","enlevait","enlevions","enleviez","enlevaient"],"Passé simple":["enlevai","enlevas","enleva","enlevâmes","enlevâtes","enlevèrent"],"Subjonctif":["enlève","enlèves","enlève","enlevions","enleviez","enlèvent"],"Conditionnel":["enlèverais","enlèverais","enlèverait","enlèverions","enlèveriez","enlèveraient"],"Participe passé":["enlevé","","","","",""],"Participe présent":["enlevant","","","","",""]},"Envoyer":{"Présent":["envoie","envoies","envoie","envoyons","envoyez","envoient"],"Imparfait":["envoyais","envoyais","envoyait","envoyions","envoyiez","envoyaient"],"Passé simple":["envoyai","envoyas","envoya","envoyâmes","envoyâtes","envoyèrent"],"Subjonctif":["envoie","envoies","envoie","envoyions","envoyiez","envoient"],"Conditionnel":["enverrais","enverrais","enverrait","enverrions","enverriez","enverraient"],"Participe passé":["envoyé","","","","",""],"Participe présent":["envoyant","","","","",""]},"Être":{"Présent":["suis","es","est","sommes","êtes","sont"],"Imparfait":["étais","étais","était","étions","étiez","étaient"],"Passé simple":["fus","fus","fut","fûmes","fûtes","furent"],"Subjonctif":["sois","sois","soit","soyons","soyez","soient"],"Conditionnel":["serais","serais","serait","serions","seriez","seraient"],"Participe présent":["étant","","","","",""]},"Faire":{"Présent":["fais","fais","fait","faisons","faites","font"],"Imparfait":["faisais","faisais","faisait","faisions","faisiez","faisaient"],"Passé simple":["fis","fis","fit","fîmes","fîtes","firent"],"Subjonctif":["fasse","fasses","fasse","fassions","fassiez","fassent"],"Conditionnel":["ferais","ferais","ferait","ferions","feriez","feraient"],"Participe passé":["fait","","","","",""],"Participe présent":["faisant","","","","",""]},"Falloir":{"Présent":["","","faut","","",""],"Imparfait":["","","fallait","","",""],"Passé simple":["","","fallut","","",""],"Subjonctif":["","","faille","","",""],"Conditionnel":["","","faudrait","","",""]},"Feuilleter":{"Présent":["feuillette","feuillettes","feuillette","feuilletons","feuilletez","feuillettent"],"Imparfait":["feuilletais","feuilletais","feuilletait","feuilletions","feuilletiez","feuilletaient"],"Passé simple":["feuilletai","feuilletas","feuilleta","feuilletâmes","feuilletâtes","feuilletèrent"],"Subjonctif":["feuillette","feuillettes","feuillette","feuilletions","feuilletiez","feuillettent"],"Conditionnel":["feuilletterais","feuilletterais","feuilletterait","feuilletterions","feuilletteriez","feuilletteraient"],"Participe passé":["feuilleté","","","","",""],"Participe présent":["feuilletant","","","","",""]},"Finir":{"Présent":["finis","finis","finit","finissons","finissez","finissent"],"Imparfait":["finissais","finissais","finissait","finissions","finissiez","finissaient"],"Passé simple":["finis","finis","finit","finîmes","finîtes","finirent"],"Subjonctif":["finisse","finisses","finisse","finissions","finissiez","finissent"],"Conditionnel":["finirais","finirais","finirait","finirions","finiriez","finiraient"],"Participe passé":["fini","","","","",""],"Participe présent":["finissant","","","","",""]},"Fuir":{"Présent":["fuis","fuis","fuit","fuyons","fuyez","fuient"],"Imparfait":["fuyais","fuyais","fuyait","fuyions","fuyiez","fuyaient"],"Passé simple":["fuis","fuis","fuit","fuîmes","fuîtes","fuirent"],"Subjonctif":["fuie","fuies","fuie","fuyions","fuyiez","fuient"],"Conditionnel":["fuirais","fuirais","fuirait","fuirions","fuiriez","fuiraient"],"Participe présent":["fuyant","","","","",""]},"Geler":{"Présent":["gèle","gèles","gèle","gelons","gelez","gèlent"],"Imparfait":["gelais","gelais","gelait","gelions","geliez","gelaient"],"Passé simple":["gelai","gelas","gela","gelâmes","gelâtes","gelèrent"],"Subjonctif":["gèle","gèles","gèle","gelions","geliez","gèlent"],"Conditionnel":["gèlerais","gèlerais","gèlerait","gèlerions","gèleriez","gèleraient"],"Participe passé":["gelé","","","","",""],"Participe présent":["gelant","","","","",""]},"Haïr":{"Présent":["hais","hais","hait","haïssons","haïssez","haïssent"],"Imparfait":["haïssais","haïssais","haïssait","haïssions","haïssiez","haïssaient"],"Passé simple":["haïs","haïs","haït","haïmes","haïtes","haïrent"],"Subjonctif":["haïsse","haïsses","haïsse","haïssions","haïssiez","haïssent"],"Conditionnel":["haïrais","haïrais","haïrait","haïrions","haïriez","haïraient"],"Participe passé":["haï","","","","",""],"Participe présent":["haïssant","","","","",""]},"Jeter":{"Présent":["jette","jettes","jette","jetons","jetez","jettent"],"Imparfait":["jetais","jetais","jetait","jetions","jetiez","jetaient"],"Passé simple":["jetai","jetas","jeta","jetâmes","jetâtes","jetèrent"],"Subjonctif":["jette","jettes","jette","jetions","jetiez","jettent"],"Conditionnel":["jetterais","jetterais","jetterait","jetterions","jetteriez","jetteraient"],"Participe passé":["jeté","","","","",""],"Participe présent":["jetant","","","","",""]},"Jumeler":{"Présent":["jumelle","jumelles","jumelle","jumelons","jumelez","jumellent"],"Imparfait":["jumelais","jumelais","jumelait","jumelions","jumeliez","jumelaient"],"Passé simple":["jumelai","jumelas","jumela","jumelâmes","jumelâtes","jumelèrent"],"Subjonctif":["jumelle","jumelles","jumelle","jumelions","jumeliez","jumellent"],"Conditionnel":["jumellerais","jumellerais","jumellerait","jumellerions","jumelleriez","jumelleraient"],"Participe passé":["jumelé","","","","",""],"Participe présent":["jumelant","","","","",""]},"Lancer":{"Présent":["lance","lances","lance","lançons","lancez","lancent"],"Imparfait":["lançais","lançais","lançait","lancions","lanciez","lançaient"],"Passé simple":["lançai","lanças","lança","lançâmes","lançâtes","lancèrent"],"Subjonctif":["lance","lances","lance","lancions","lanciez","lancent"],"Conditionnel":["lancerais","lancerais","lancerait","lancerions","lanceriez","lanceraient"],"Participe passé":["lancé","","","","",""],"Participe présent":["lançant","","","","",""]},"Lever":{"Présent":["lève","lèves","lève","levons","levez","lèvent"],"Imparfait":["levais","levais","levait","levions","leviez","levaient"],"Passé simple":["levai","levas","leva","levâmes","levâtes","levèrent"],"Subjonctif":["lève","lèves","lève","levions","leviez","lèvent"],"Conditionnel":["lèverais","lèverais","lèverait","lèverions","lèveriez","lèveraient"],"Participe passé":["levé","","","","",""],"Participe présent":["levant","","","","",""]},"Lire":{"Présent":["lis","lis","lit","lisons","lisez","lisent"],"Imparfait":["lisais","lisais","lisait","lisions","lisiez","lisaient"],"Passé simple":["lus","lus","lut","lûmes","lûtes","lurent"],"Subjonctif":["lise","lises","lise","lisions","lisiez","lisent"],"Conditionnel":["lirais","lirais","lirait","lirions","liriez","liraient"],"Participe passé":["lu","","","","",""],"Participe présent":["lisant","","","","",""]},"Manger":{"Présent":["mange","manges","mange","mangeons","mangez","mangent"],"Imparfait":["mangeais","mangeais","mangeait","mangions","mangiez","mangeaient"],"Passé simple":["mangeai","mangeas","mangea","mangeâmes","mangeâtes","mangèrent"],"Subjonctif":["mange","manges","mange","mangions","mangiez","mangent"],"Conditionnel":["mangerais","mangerais","mangerait","mangerions","mangeriez","mangeraient"],"Participe passé":["mangé","","","","",""],"Participe présent":["mangeant","","","","",""]},"Mener":{"Présent":["mène","mènes","mène","menons","menez","mènent"],"Imparfait":["menais","menais","menait","menions","meniez","menaient"],"Passé simple":["menai","menas","mena","menâmes","menâtes","menèrent"],"Subjonctif":["mène","mènes","mène","menions","meniez","mènent"],"Conditionnel":["mènerais","mènerais","mènerait","mènerions","mèneriez","mèneraient"],"Participe passé":["mené","","","","",""],"Participe présent":["menant","","","","",""]},"Mettre":{"Présent":["mets","mets","met","mettons","mettez","mettent"],"Imparfait":["mettais","mettais","mettait","mettions","mettiez","mettaient"],"Passé simple":["mis","mis","mit","mîmes","mîtes","mirent"],"Subjonctif":["mette","mettes","mette","mettions","mettiez","mettent"],"Conditionnel":["mettrais","mettrais","mettrait","mettrions","mettriez","mettraient"],"Participe passé":["mis","","","","",""],"Participe présent":["mettant","","","","",""]},"Moudre":{"Présent":["mouds","mouds","moud","moulons","moulez","moulent"],"Imparfait":["moulais","moulais","moulait","moulions","mouliez","moulaient"],"Passé simple":["moulus","moulus","moulut","moulûmes","moulûtes","moulurent"],"Subjonctif":["moule","moules","moule","moulions","mouliez","moulent"],"Conditionnel":["moudrais","moudrais","moudrait","moudrions","moudriez","moudraient"],"Participe passé":["moulu","","","","",""],"Participe présent":["moulant","","","","",""]},"Mourir":{"Présent":["meurs","meurs","meurt","mourons","mourez","meurent"],"Imparfait":["mourais","mourais","mourait","mourions","mouriez","mouraient"],"Passé simple":["mourus","mourus","mourut","mourûmes","mourûtes","moururent"],"Subjonctif":["meure","meures","meure","mourions","mouriez","meurent"],"Conditionnel":["mourrais","mourrais","mourrait","mourrions","mourriez","mourraient"],"Participe passé":["mort","","","","",""],"Participe présent":["mourant","","","","",""]},"Naître":{"Présent":["nais","nais","naît","naissons","naissez","naissent"],"Imparfait":["naissais","naissais","naissait","naissions","naissiez","naissaient"],"Passé simple":["naquis","naquis","naquit","naquîmes","naquîtes","naquirent"],"Subjonctif":["naisse","naisses","naisse","naissions","naissiez","naissent"],"Conditionnel":["naîtrais","naîtrais","naîtrait","naîtrions","naîtriez","naîtraient"],"Participe passé":["né","","","","",""],"Participe présent":["naissant","","","","",""]},"Ouvrir":{"Présent":["ouvre","ouvres","ouvre","ouvrons","ouvrez","ouvrent"],"Imparfait":["ouvrais","ouvrais","ouvrait","ouvrions","ouvriez","ouvraient"],"Passé simple":["ouvris","ouvris","ouvrit","ouvrîmes","ouvrîtes","ouvrirent"],"Subjonctif":["ouvre","ouvres","ouvre","ouvrions","ouvriez","ouvrent"],"Conditionnel":["ouvrirais","ouvrirais","ouvrirait","ouvririons","ouvririez","ouvriraient"],"Participe passé":["ouvert","","","","",""],"Participe présent":["ouvrant","","","","",""]},"Payer":{"Présent":["paie","paies","paie","payons","payez","paient"],"Imparfait":["payais","payais","payait","payions","payiez","payaient"],"Passé simple":["payai","payas","paya","payâmes","payâtes","payèrent"],"Subjonctif":["paie","paies","paie","payions","payiez","paient"],"Conditionnel":["paierais","paierais","paierait","paierions","paieriez","paieraient"],"Participe passé":["payé","","","","",""],"Participe présent":["payant","","","","",""]},"Peindre":{"Présent":["peins","peins","peint","peignons","peignez","peignent"],"Imparfait":["peignais","peignais","peignait","peignions","peigniez","peignaient"],"Passé simple":["peignis","peignis","peignit","peignîmes","peignîtes","peignirent"],"Subjonctif":["peigne","peignes","peigne","peignions","peigniez","peignent"],"Conditionnel":["peindrais","peindrais","peindrait","peindrions","peindriez","peindraient"],"Participe passé":["peint","","","","",""],"Participe présent":["peignant","","","","",""]},"Peler":{"Présent":["pèle","pèles","pèle","pelons","pelez","pèlent"],"Imparfait":["pelais","pelais","pelait","pelions","peliez","pelaient"],"Passé simple":["pelai","pelas","pela","pelâmes","pelâtes","pelèrent"],"Subjonctif":["pèle","pèles","pèle","pelions","peliez","pèlent"],"Conditionnel":["pèlerais","pèlerais","pèlerait","pèlerions","pèleriez","pèleraient"],"Participe passé":["pelé","","","","",""],"Participe présent":["pelant","","","","",""]},"Perdre":{"Présent":["perds","perds","perd","perdons","perdez","perdent"],"Imparfait":["perdais","perdais","perdait","perdions","perdiez","perdaient"],"Passé simple":["perdis","perdis","perdit","perdîmes","perdîtes","perdirent"],"Subjonctif":["perde","perdes","perde","perdions","perdiez","perdent"],"Conditionnel":["perdrais","perdrais","perdrait","perdrions","perdriez","perdraient"],"Participe passé":["perdu","","","","",""],"Participe présent":["perdant","","","","",""]},"Peser":{"Présent":["pèse","pèses","pèse","pesons","pesez","pèsent"],"Imparfait":["pesais","pesais","pesait","pesions","pesiez","pesaient"],"Passé simple":["pesai","pesas","pesa","pesâmes","pesâtes","pesèrent"],"Subjonctif":["pèse","pèses","pèse","pesions","pesiez","pèsent"],"Conditionnel":["pèserais","pèserais","pèserait","pèserions","pèseriez","pèseraient"],"Participe passé":["pesé","","","","",""],"Participe présent":["pesant","","","","",""]},"Plaire":{"Présent":["plais","plais","plaît","plaisons","plaisez","plaisent"],"Imparfait":["plaisais","plaisais","plaisait","plaisions","plaisiez","plaisaient"],"Passé simple":["plus","plus","plut","plûmes","plûtes","plurent"],"Subjonctif":["plaise","plaises","plaise","plaisions","plaisiez","plaisent"],"Conditionnel":["plairais","plairais","plairait","plairions","plairiez","plairaient"],"Participe passé":["plu","","","","",""],"Participe présent":["plaisant","","","","",""]},"Pouvoir":{"Présent":["peux","peux","peut","pouvons","pouvez","peuvent"],"Imparfait":["pouvais","pouvais","pouvait","pouvions","pouviez","pouvaient"],"Passé simple":["pus","pus","put","pûmes","pûtes","purent"],"Subjonctif":["puisse","puisses","puisse","puissions","puissiez","puissent"],"Conditionnel":["pourrais","pourrais","pourrait","pourrions","pourriez","pourraient"],"Participe passé":["pu","","","","",""],"Participe présent":["pouvant","","","","",""]},"Prendre":{"Présent":["prends","prends","prend","prenons","prenez","prennent"],"Imparfait":["prenais","prenais","prenait","prenions","preniez","prenaient"],"Passé simple":["pris","pris","prit","prîmes","prîtes","prirent"],"Subjonctif":["prenne","prennes","prenne","prenions","preniez","prennent"],"Conditionnel":["prendrais","prendrais","prendrait","prendrions","prendriez","prendraient"],"Participe passé":["pris","","","","",""],"Participe présent":["prenant","","","","",""]},"Recevoir":{"Présent":["reçois","reçois","reçoit","recevons","recevez","reçoivent"],"Imparfait":["recevais","recevais","recevait","recevions","receviez","recevaient"],"Passé simple":["reçus","reçus","reçut","reçûmes","reçûtes","reçurent"],"Subjonctif":["reçoive","reçoives","reçoive","recevions","receviez","reçoivent"],"Conditionnel":["recevrais","recevrais","recevrait","recevrions","recevriez","recevraient"],"Participe passé":["reçu","","","","",""],"Participe présent":["recevant","","","","",""]},"Résoudre":{"Présent":["résous","résous","résout","résolvons","résolvez","résolvent"],"Imparfait":["résolvais","résolvais","résolvait","résolvions","résolviez","résolvaient"],"Passé simple":["résolus","résolus","résolut","résolûmes","résolûtes","résolurent"],"Subjonctif":["résolve","résolves","résolve","résolvions","résolviez","résolvent"],"Conditionnel":["résoudrais","résoudrais","résoudrait","résoudrions","résoudriez","résoudraient"],"Participe passé":["résolu","","","","",""],"Participe présent":["résolvant","","","","",""]},"Rire":{"Présent":["ris","ris","rit","rions","riez","rient"],"Imparfait":["riais","riais","riait","riions","riiez","riaient"],"Passé simple":["ris","ris","rit","rîmes","rîtes","rirent"],"Subjonctif":["rie","ries","rie","riions","riiez","rient"],"Conditionnel":["rirais","rirais","rirait","ririons","ririez","riraient"],"Participe passé":["ri","","","","",""],"Participe présent":["riant","","","","",""]},"Rompre":{"Présent":["romps","romps","rompt","rompons","rompez","rompent"],"Imparfait":["rompais","rompais","rompait","rompions","rompiez","rompaient"],"Passé simple":["rompis","rompis","rompit","rompîmes","rompîtes","rompirent"],"Subjonctif":["rompe","rompes","rompe","rompions","rompiez","rompent"],"Conditionnel":["romprais","romprais","romprait","romprions","rompriez","rompraient"],"Participe passé":["rompu","","","","",""],"Participe présent":["rompant","","","","",""]},"Savoir":{"Présent":["sais","sais","sait","savons","savez","savent"],"Imparfait":["savais","savais","savait","savions","saviez","savaient"],"Passé simple":["sus","sus","sut","sûmes","sûtes","surent"],"Subjonctif":["sache","saches","sache","sachions","sachiez","sachent"],"Conditionnel":["saurais","saurais","saurait","saurions","sauriez","sauraient"],"Participe passé":["su","","","","",""],"Participe présent":["sachant","","","","",""]},"Sentir":{"Présent":["sens","sens","sent","sentons","sentez","sentent"],"Imparfait":["sentais","sentais","sentait","sentions","sentiez","sentaient"],"Passé simple":["sentis","sentis","sentit","sentîmes","sentîtes","sentirent"],"Subjonctif":["sente","sentes","sente","sentions","sentiez","sentent"],"Conditionnel":["sentirais","sentirais","sentirait","sentirions","sentiriez","sentiraient"],"Participe passé":["senti","","","","",""],"Participe présent":["sentant","","","","",""]},"Servir":{"Présent":["sers","sers","sert","servons","servez","servent"],"Imparfait":["servais","servais","servait","servions","serviez","servaient"],"Passé simple":["servis","servis","servit","servîmes","servîtes","servirent"],"Subjonctif":["serve","serves","serve","servions","serviez","servent"],"Conditionnel":["servirais","servirais","servirait","servirions","serviriez","serviraient"],"Participe passé":["servi","","","","",""],"Participe présent":["servant","","","","",""]},"Souvenir":{"Présent":["souviens","souviens","souvient","souvenons","souvenez","souviennent"],"Imparfait":["souvenais","souvenais","souvenait","souvenions","souveniez","souvenaient"],"Passé simple":["souvins","souvins","souvint","souvînmes","souvîntes","souvinrent"],"Subjonctif":["souvienne","souviennes","souvienne","souvenions","souveniez","souviennent"],"Conditionnel":["souviendrais","souviendrais","souviendrait","souviendrions","souviendriez","souviendraient"],"Participe passé":["souvenu","","","","",""],"Participe présent":["souvenant","","","","",""]},"Suivre":{"Présent":["suis","suis","suit","suivons","suivez","suivent"],"Imparfait":["suivais","suivais","suivait","suivions","suiviez","suivaient"],"Passé simple":["suivis","suivis","suivit","suivîmes","suivîtes","suivirent"],"Subjonctif":["suive","suives","suive","suivions","suiviez","suivent"],"Conditionnel":["suivrais","suivrais","suivrait","suivrions","suivriez","suivraient"],"Participe passé":["suivi","","","","",""],"Participe présent":["suivant","","","","",""]},"Tenir":{"Présent":["tiens","tiens","tient","tenons","tenez","tiennent"],"Imparfait":["tenais","tenais","tenait","tenions","teniez","tenaient"],"Passé simple":["tins","tins","tint","tînmes","tîntes","tinrent"],"Subjonctif":["tienne","tiennes","tienne","tenions","teniez","tiennent"],"Conditionnel":["tiendrais","tiendrais","tiendrait","tiendrions","tiendriez","tiendraient"],"Participe passé":["tenu","","","","",""],"Participe présent":["tenant","","","","",""]},"Vaincre":{"Présent":["vaincs","vaincs","vainc","vainquons","vainquez","vainquent"],"Imparfait":["vainquais","vainquais","vainquait","vainquions","vainquiez","vainquaient"],"Passé simple":["vainquis","vainquis","vainquit","vainquîmes","vainquîtes","vainquirent"],"Subjonctif":["vainque","vainques","vainque","vainquions","vainquiez","vainquent"],"Conditionnel":["vaincrais","vaincrais","vaincrait","vaincrions","vaincriez","vaincraient"],"Participe passé":["vaincu","","","","",""],"Participe présent":["vainquant","","","","",""]},"Valoir":{"Présent":["vaux","vaux","vaut","valons","valez","valent"],"Imparfait":["valais","valais","valait","valions","valiez","valaient"],"Passé simple":["valus","valus","valut","valûmes","valûtes","valurent"],"Subjonctif":["vaille","vailles","vaille","valions","valiez","vaillent"],"Conditionnel":["vaudrais","vaudrais","vaudrait","vaudrions","vaudriez","vaudraient"],"Participe passé":["valu","","","","",""],"Participe présent":["valant","","","","",""]},"Venir":{"Présent":["viens","viens","vient","venons","venez","viennent"],"Imparfait":["venais","venais","venait","venions","veniez","venaient"],"Passé simple":["vins","vins","vint","vînmes","vîntes","vinrent"],"Subjonctif":["vienne","viennes","vienne","venions","veniez","viennent"],"Conditionnel":["viendrais","viendrais","viendrait","viendrions","viendriez","viendraient"],"Participe passé":["venu","","","","",""],"Participe présent":["venant","","","","",""]},"Vivre":{"Présent":["vis","vis","vit","vivons","vivez","vivent"],"Imparfait":["vivais","vivais","vivait","vivions","viviez","vivaient"],"Passé simple":["vécus","vécus","vécut","vécûmes","vécûtes","vécurent"],"Subjonctif":["vive","vives","vive","vivions","viviez","vivent"],"Conditionnel":["vivrais","vivrais","vivrait","vivrions","vivriez","vivraient"],"Participe passé":["vécu","","","","",""],"Participe présent":["vivant","","","","",""]},"Voir":{"Présent":["vois","vois","voit","voyons","voyez","voient"],"Imparfait":["voyais","voyais","voyait","voyions","voyiez","voyaient"],"Passé simple":["vis","vis","vit","vîmes","vîtes","virent"],"Subjonctif":["voie","voies","voie","voyions","voyiez","voient"],"Conditionnel":["verrais","verrais","verrait","verrions","verriez","verraient"],"Participe passé":["vu","","","","",""],"Participe présent":["voyant","","","","",""]},"Vouloir":{"Présent":["veux","veux","veut","voulons","voulez","veulent"],"Imparfait":["voulais","voulais","voulait","voulions","vouliez","voulaient"],"Passé simple":["voulus","voulus","voulut","voulûmes","voulûtes","voulurent"],"Subjonctif":["veuille","veuilles","veuille","voulions","vouliez","veuillent"],"Conditionnel":["voudrais","voudrais","voudrait","voudrions","voudriez","voudraient"],"Participe passé":["voulu","","","","",""],"Participe présent":["voulant","","","","",""]}};
 
 let activeTenses = new Set(['Présent','Imparfait','Conditionnel']);
-let activeVerbs = new Set();
-let currentMode = 'random';
-let timeLimit = 30;
-let session = {questions:[], current:0, checked:false, results:[], startTime:Date.now(), endTime:0};
-let timerState = {interval:null, remaining:0};
-let historyDirty = true; // tracks whether history tab needs re-render
-
-function computeMistakeBook(){
-  // Replay history chronologically to compute correctStreak per verb||tense
-  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
-  const sorted = [...history].sort((a,b)=>(a.ts||0)-(b.ts||0));
-  const map = {}; // key -> {wrongCount, streak}
-  sorted.forEach(rec=>{
-    (rec.results||[]).filter(Boolean).forEach(r=>{
-      if(r.skipped) return;
-      const key = `${r.verb}||${r.tense}`;
-      if(!map[key]) map[key]={wrongCount:0,streak:0};
-      if(r.allRight){
-        map[key].streak++;
-      } else {
-        map[key].wrongCount++;
-        map[key].streak=0;
-      }
-    });
-  });
-  // Build entries: only keep items that were ever wrong
-  const entries = [];
-  Object.keys(map).forEach(key=>{
-    const m = map[key];
-    if(m.wrongCount === 0) return; // never wrong, skip
-    const [verb,tense] = key.split('||');
-    if(!DB[verb]||!DB[verb][tense]) return;
-    let status;
-    if(m.streak >= 2) status='mastered';
-    else if(m.streak === 1) status='learning';
-    else status='todo';
-    entries.push({verb,tense,status,key});
-  });
-  return entries;
-}
-
-function renderMistakeBook(){
-  const container = document.getElementById('sub-mistakes');
-  const entries = computeMistakeBook();
-
-  if(!entries.length){
-    container.innerHTML='<div class="empty-state" id="empty-mistakes">暂无错题记录。完成练习并保存后，错题将在此显示。</div>';
-    return;
-  }
-
-  const todo = entries.filter(e=>e.status==='todo').length;
-  const learning = entries.filter(e=>e.status==='learning').length;
-  const mastered = entries.filter(e=>e.status==='mastered').length;
-  const pending = todo + learning;
-
-  // Group by verb alphabetically
-  const byVerb = {};
-  entries.forEach(e=>{
-    if(!byVerb[e.verb]) byVerb[e.verb]=[];
-    byVerb[e.verb].push(e);
-  });
-  const verbsSorted = Object.keys(byVerb).sort();
-
-  const statusLabel = {
-    todo: lang.todo, learning: lang.learning, mastered: lang.mastered
-  };
-  const statusClass = {
-    todo:'todo', learning:'learning', mastered:'mastered'
-  };
-
-  const groups = verbsSorted.map(verb=>{
-    const rows = byVerb[verb].map(e=>`
-      <div class="mistake-tense-row">
-        <span class="mistake-tense-name">${e.tense}</span>
-        <span class="mistake-status ${statusClass[e.status]}">${statusLabel[e.status]}</span>
-      </div>`).join('');
-    return `<div class="mistake-verb-group">
-      <div class="mistake-verb-name">${verb}</div>
-      ${rows}
-    </div>`;
-  }).join('');
-
-  // Practice pool: todo + learning items only
-  const practicePool = entries
-    .filter(e=>e.status!=='mastered')
-    .map(e=>({verb:e.verb, tense:e.tense, forms:DB[e.verb][e.tense]}));
-
-  container.innerHTML = `
-    <div class="mistake-summary">
-      <span class="mistake-summary-text">
-        ${lang.todo} <strong>${todo}</strong> · ${lang.learning} <strong>${learning}</strong> · ${lang.mastered} <strong>${mastered}</strong>
-      </span>
-      ${pending ? `<button class="mistake-practice-btn" id="mistake-practice-btn">${lang.practicePending} (${pending})</button>` : ''}
-    </div>
-    ${groups}`;
-
-  if(pending){
-    document.getElementById('mistake-practice-btn').onclick = ()=>startSession(shuffle(practicePool), true);
-  }
-}
-
-function switchSubTab(t){
-  document.querySelectorAll('.sub-tab').forEach((el,i)=>{
-    el.classList.toggle('active',['mistakes','records'][i]===t);
-  });
-  document.getElementById('sub-mistakes').style.display = t==='mistakes'?'':'none';
-  document.getElementById('sub-records').style.display = t==='records'?'':'none';
-  if(t==='mistakes') renderMistakeBook();
-}
+let session = {questions:[], current:0, checked:false, results:[]};
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>{el.classList.toggle('active',['practice','history'][i]===t)});
   document.getElementById('tab-practice').style.display = t==='practice'?'':'none';
   document.getElementById('tab-history').style.display = t==='history'?'':'none';
-  if(t==='history'){
-    // Always re-render mistake book when switching to history; records only if dirty
-    renderMistakeBook();
-    if(historyDirty){
-      renderHistory();
-      historyDirty = false;
-    }
-  }
-}
-
-function initVerbs(){
-  const saved = localStorage.getItem('frVerb_activeVerbs');
-  const allVerbs = Object.keys(DB);
-  if(saved){
-    activeVerbs = new Set(JSON.parse(saved));
-  } else {
-    activeVerbs = new Set(allVerbs);
-    localStorage.setItem('frVerb_activeVerbs', JSON.stringify(allVerbs));
-  }
-  const c = document.getElementById('verb-chips');
-  c.innerHTML = '';
-  allVerbs.forEach(verb=>{
-    const el = document.createElement('button');
-    el.className = 'tense-chip' + (activeVerbs.has(verb) ? ' on' : '');
-    el.textContent = verb;
-    el.onclick = ()=>{
-      if(activeVerbs.has(verb)){
-        if(activeVerbs.size>1) activeVerbs.delete(verb);
-      } else {
-        activeVerbs.add(verb);
-      }
-      el.classList.toggle('on', activeVerbs.has(verb));
-      localStorage.setItem('frVerb_activeVerbs', JSON.stringify([...activeVerbs]));
-    };
-    c.appendChild(el);
-  });
-  // Update summary text on toggle
-  const details = document.querySelector('.verb-details');
-  const summary = document.getElementById('verb-summary');
-  if(details && summary){
-    const updateSummary = ()=>{ summary.textContent = details.open ? lang.collapseVerbs : lang.expandVerbs + ` (${activeVerbs.size}/${Object.keys(DB).length})`; };
-    updateSummary();
-    details.removeEventListener('toggle', details._toggleHandler);
-    details._toggleHandler = updateSummary;
-    details.addEventListener('toggle', details._toggleHandler);
-  }
-}
-
-function toggleAllVerbs(){
-  const allVerbs = Object.keys(DB);
-  const allSelected = activeVerbs.size === allVerbs.length;
-  if(allSelected){
-    activeVerbs = new Set([allVerbs[0]]);
-  } else {
-    activeVerbs = new Set(allVerbs);
-  }
-  localStorage.setItem('frVerb_activeVerbs', JSON.stringify([...activeVerbs]));
-  initVerbs();
-}
-
-function initModes(){
-  document.querySelectorAll('.mode-chip').forEach(el=>{
-    el.onclick = ()=>{
-      document.querySelectorAll('.mode-chip').forEach(e=>e.classList.remove('on'));
-      el.classList.add('on');
-      currentMode = el.dataset.mode;
-      document.getElementById('mode-config').style.display = currentMode === 'timed' ? '' : 'none';
-    };
-  });
+  if(t==='history') renderHistory();
 }
 
 function initChips(){
-  const saved = localStorage.getItem('frVerb_activeTenses');
-  if(saved){
-    try{ activeTenses = new Set(JSON.parse(saved)); }catch(e){}
-  }
   const c = document.getElementById('tense-chips');
   TENSES.forEach(t=>{
     const el = document.createElement('div');
@@ -503,7 +173,6 @@ function initChips(){
       if(activeTenses.has(t)){if(activeTenses.size>1)activeTenses.delete(t);}
       else activeTenses.add(t);
       el.classList.toggle('on', activeTenses.has(t));
-      localStorage.setItem('frVerb_activeTenses', JSON.stringify([...activeTenses]));
     };
     c.appendChild(el);
   });
@@ -512,7 +181,6 @@ function initChips(){
 function buildPool(){
   const pool = [];
   Object.keys(DB).forEach(verb=>{
-    if(!activeVerbs.has(verb)) return;
     activeTenses.forEach(tense=>{
       if(DB[verb][tense]){
         const forms = DB[verb][tense];
@@ -525,73 +193,35 @@ function buildPool(){
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-function startSession(customPool, autoSave){
+function startSession(){
   const n = parseInt(document.getElementById('count-slider').value);
-  timeLimit = parseInt(document.getElementById('time-slider').value);
-  const pool = customPool ? customPool : shuffle(buildPool()).slice(0, n);
+  const pool = shuffle(buildPool()).slice(0, n);
   if(!pool.length){showToast('请至少选择一个时态！');return;}
-  session = {questions:pool, current:0, checked:false, results:[], startTime:Date.now(), endTime:0, autoSave: autoSave || false};
+  session = {questions:pool, current:0, checked:false, results:[]};
   document.getElementById('config-screen').style.display='none';
   document.getElementById('quiz-screen').style.display='';
   document.getElementById('result-screen').style.display='none';
-  if(document.getElementById('tab-history').style.display !== 'none') switchTab('practice');
   renderQuestion();
 }
 
-const ACCENT_CHARS = ['à','â','ç','é','è','ê','ë','î','ï','ô','œ','ù','û','ü'];
-
-function startTimer(){
-  clearInterval(timerState.interval);
-  if(currentMode !== 'timed') return;
-  const total = timeLimit * 1000;
-  timerState.remaining = total;
-  const timerRow = document.getElementById('timer-row');
-  const timerText = document.getElementById('timer-text');
-  const timerFill = document.getElementById('timer-fill');
-  timerRow.style.display = '';
-  timerRow.classList.add('active');
-  timerText.textContent = timeLimit + lang.seconds;
-  timerFill.style.width = '100%';
-  const startTime = Date.now();
-  timerState.interval = setInterval(()=>{
-    const elapsed = Date.now() - startTime;
-    const remaining = Math.max(0, total - elapsed);
-    timerState.remaining = remaining;
-    timerFill.style.width = (remaining/total*100) + '%';
-    timerText.textContent = Math.ceil(remaining/1000) + lang.seconds;
-    if(remaining <= 0){
-      clearInterval(timerState.interval);
-      showToast('时间到！');
-      if(!session.checked) checkAnswers();
-      setTimeout(nextQuestion, 1000);
-    }
-  }, 100);
-}
-
 function renderQuestion(){
-  setAccentMode(false);
-  if(currentMode === 'timed') startTimer();
   const q = session.questions[session.current];
   const total = session.questions.length;
   const pct = Math.round(session.current/total*100);
-  document.getElementById('prog-label').textContent = `${lang.practice} ${session.current+1} ${lang.questionsTotal} ${total} ${lang.questions}`;
+  document.getElementById('prog-label').textContent = `第 ${session.current+1} 题，共 ${total} 题`;
   document.getElementById('prog-pct').textContent = pct+'%';
   document.getElementById('prog-fill').style.width = pct+'%';
   session.checked = false;
 
   const isPP = (q.tense==='Participe passé'||q.tense==='Participe présent');
-  const accentBar = `<div class="accent-bar" id="accent-bar">${ACCENT_CHARS.map(c=>`<button class="accent-btn" type="button" data-accent="${c}">${c}</button>`).join('')}</div>`;
+  const activePersons = isPP ? [0] : [0,1,2,3,4,5];
 
-  const inputArea = isPP ? `
-    <div class="participle-row">
-      <input class="participle-input" id="inp-0" placeholder="..." autocomplete="off" autocorrect="off" spellcheck="false">
-    </div>` :
-    `<div class="person-grid">${[0,1,2,3,4,5].map(i=>`
-      <div class="person-row" id="row-${i}">
-        <span class="person-label">${PERSONS[i]}</span>
-        <input class="person-input" id="inp-${i}" placeholder="..." autocomplete="off" autocorrect="off" spellcheck="false">
-        <span class="answer-hint" id="hint-${i}"></span>
-      </div>`).join('')}</div>`;
+  let rows = activePersons.map(i=>`
+    <div class="person-row" id="row-${i}">
+      <span class="person-label">${PERSONS[i]}</span>
+      <input class="person-input" id="inp-${i}" placeholder="..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <span class="answer-hint" id="hint-${i}"></span>
+    </div>`).join('');
 
   document.getElementById('question-area').innerHTML = `
     <div class="question-card">
@@ -599,13 +229,12 @@ function renderQuestion(){
         <span class="verb-name">${q.verb}</span>
         <span class="tense-badge">${q.tense}</span>
       </div>
-      ${accentBar}
-      ${inputArea}
+      <div class="person-grid">${rows}</div>
       <div class="action-row">
         <button class="check-btn" onclick="checkAnswers()">
-          <span class="check-icon">✓</span> <span id="btn-check">${lang.check}</span>
+          <span class="check-icon">✓</span> 核对答案
         </button>
-        <button class="skip-btn" onclick="nextQuestion()" id="btn-skip">${lang.skip}</button>
+        <button class="skip-btn" onclick="nextQuestion()">跳过 →</button>
       </div>
     </div>`;
   document.getElementById('inp-0')?.focus();
@@ -616,42 +245,31 @@ function normalize(s){return (s||'').trim().toLowerCase();}
 function checkAnswers(){
   const q = session.questions[session.current];
   const isPP = (q.tense==='Participe passé'||q.tense==='Participe présent');
+  const activePersons = isPP ? [0] : [0,1,2,3,4,5];
   let allRight = true;
   const personResults = [];
 
-  if(isPP){
-    const inp = document.getElementById('inp-0');
-    const expected = q.forms[0];
-    const val = inp ? inp.value : '';
-    const ok = normalize(val) === normalize(expected);
-    inp.classList.toggle('correct', ok);
-    inp.style.borderColor = ok ? 'var(--green)' : 'var(--red)';
-    if(!ok && expected) showToast(`✗ 正确答案：${expected}`);
+  activePersons.forEach(i=>{
+    const inp = document.getElementById('inp-'+i);
+    const row = document.getElementById('row-'+i);
+    const hint = document.getElementById('hint-'+i);
+    const expected = q.forms[i];
+    if(!expected){row.classList.remove('correct','wrong');personResults.push({i,ok:true,ans:''});return;}
+    const val = inp?inp.value:'';
+    const ok = normalize(val)===normalize(expected);
+    row.classList.toggle('correct',ok);
+    row.classList.toggle('wrong',!ok);
+    if(hint) hint.textContent = ok ? '' : `✗ 正确答案：${expected}`;
     if(!ok) allRight = false;
-    personResults.push({i:0, ok, userAns:val, correct:expected, person:'Participe'});
-  } else {
-    [0,1,2,3,4,5].forEach(i=>{
-      const inp = document.getElementById('inp-'+i);
-      const row = document.getElementById('row-'+i);
-      const hint = document.getElementById('hint-'+i);
-      const expected = q.forms[i];
-      if(!expected){row.classList.remove('correct','wrong');personResults.push({i,ok:true,ans:''});return;}
-      const val = inp?inp.value:'';
-      const ok = normalize(val)===normalize(expected);
-      row.classList.toggle('correct',ok);
-      row.classList.toggle('wrong',!ok);
-      if(hint) hint.textContent = ok ? '' : `✗ 正确答案：${expected}`;
-      if(!ok) allRight = false;
-      personResults.push({i, ok, userAns:val, correct:expected, person:PERSONS[i]});
-    });
-  }
+    personResults.push({i, ok, userAns:val, correct:expected, person:PERSONS[i]});
+  });
 
   session.checked = true;
 
   const actionRow = document.querySelector('.action-row');
   actionRow.innerHTML = `
     <button class="nav-btn nav-next" onclick="nextQuestion()">
-      ${session.current+1 < session.questions.length ? '<span id="btn-next">'+lang.next+'</span> →' : '<span id="btn-result">'+lang.result+'</span> →'}
+      ${session.current+1 < session.questions.length ? '下一题 →' : '查看结果 →'}
     </button>`;
 
   if(allRight) showToast('全部正确！');
@@ -659,7 +277,6 @@ function checkAnswers(){
 }
 
 function nextQuestion(){
-  clearInterval(timerState.interval);
   if(!session.checked){
     const q = session.questions[session.current];
     session.results[session.current] = {verb:q.verb, tense:q.tense, allRight:false, skipped:true};
@@ -671,82 +288,39 @@ function nextQuestion(){
 
 function showResult(){
   document.getElementById('quiz-screen').style.display='none';
-  session.endTime = Date.now();
   const rs = document.getElementById('result-screen');
   rs.style.display='';
   const correct = session.results.filter(r=>r&&r.allRight).length;
   const total = session.questions.length;
   const pct = Math.round(correct/total*100);
-
-  let tier, emoji, message;
-  if(pct === 100){
-    tier='tier-perfect'; emoji='🏆'; message=lang.perfect;
-  } else if(pct >= 80){
-    tier='tier-great'; emoji='✨'; message=lang.great;
-  } else if(pct >= 60){
-    tier='tier-ok'; emoji='📖'; message=lang.ok;
-  } else {
-    tier='tier-low'; emoji='💪'; message=lang.low;
-  }
-
-  // Build retry-mistakes pool from this session's wrong answers
-  const wrongItems = session.results.filter(r=>r&&!r.allRight&&!r.skipped);
-  const retryPool = wrongItems.map(r=>{
-    if(DB[r.verb]&&DB[r.verb][r.tense]) return {verb:r.verb,tense:r.tense,forms:DB[r.verb][r.tense]};
-    return null;
-  }).filter(Boolean);
-
   rs.innerHTML = `
     <div class="result-screen">
-      <div class="result-score ${tier}">${emoji} ${pct}%</div>
-      <div class="result-message">${message}</div>
-      <div class="result-label" style="margin-top:.25rem">${lang.correctRate}</div>
+      <div class="result-score">${pct}%</div>
+      <div class="result-label">正确率</div>
       <div class="result-stats">
-        <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">${lang.questionsTotal} ${lang.questions}</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--green)">${correct}</div><div class="stat-lbl">${lang.correct}</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--red)">${total-correct}</div><div class="stat-lbl">${lang.wrong}</div></div>
+        <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">总题数</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--green)">${correct}</div><div class="stat-lbl">全对</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--red)">${total-correct}</div><div class="stat-lbl">出错</div></div>
       </div>
-      <div class="result-actions">
-        <button class="save-btn" id="save-btn" onclick="saveSession()">${lang.savePractice}</button>
-        <button class="again-btn" onclick="resetToConfig()">${lang.practiceAgain}</button>
+      <div>
+        <button class="save-btn" onclick="saveSession()">保存本次练习</button>
+        <button class="again-btn" onclick="resetToConfig()">再练一次</button>
       </div>
-      ${retryPool.length ? `<div style="margin-top:.75rem;text-align:center"><button class="retry-btn" id="retry-mistakes-btn">${lang.retryMistakes} (${retryPool.length} ${lang.questions})</button></div>` : ''}
     </div>`;
-
-  // Auto-save for mistake practice sessions
-  if(session.autoSave){
-    saveSession({hidden:true});
-    const saveBtn = document.getElementById('save-btn');
-    saveBtn.textContent = lang.autoSaved;
-    saveBtn.disabled = true;
-    saveBtn.style.opacity = '0.6';
-    saveBtn.style.cursor = 'not-allowed';
-  }
-
-  // Attach retry handler after DOM insertion (avoids JSON escaping issues)
-  if(retryPool.length){
-    document.getElementById('retry-mistakes-btn').onclick = ()=>startSession(retryPool, true);
-  }
 }
 
-function saveSession(options){
+function saveSession(){
   const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
-  const opts = options || {};
   const rec = {
     date: new Date().toLocaleString('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}),
     ts: Date.now(),
     total: session.questions.length,
     correct: session.results.filter(r=>r&&r.allRight).length,
     tenses: [...activeTenses],
-    results: session.results,
-    mode: currentMode,
-    timeLimit: timeLimit,
-    duration: session.endTime - session.startTime,
-    hidden: opts.hidden || false
+    results: session.results
   };
   history.unshift(rec);
   localStorage.setItem('frVerb_history', JSON.stringify(history.slice(0,50)));
-  historyDirty = true;
   showToast('已保存！');
 }
 
@@ -758,55 +332,26 @@ function resetToConfig(){
 
 function renderHistory(){
   const list = document.getElementById('history-list');
-  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]').filter(rec=>!rec.hidden);
-  if(!history.length){list.innerHTML='<div class="empty-state" id="empty-history">'+lang.noRecords+'</div>';return;}
+  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
+  if(!history.length){list.innerHTML='<div class="empty-state">暂无练习记录</div>';return;}
   list.innerHTML = history.map((rec,idx)=>{
     const pct = Math.round(rec.correct/rec.total*100);
-    const modeNames = {random:lang.modeRandom, timed:lang.modeTimed};
-    const modeStr = modeNames[rec.mode] || '';
-    const tenseStr = (rec.tenses||[]).map(t=>TENSE_SHORT[t]||t).join(' - ');
-    const durationStr = rec.mode === 'timed' && rec.duration ? `${(rec.duration/1000).toFixed(1)}s/${rec.timeLimit*rec.total}s` : '';
-
-    const detailRows = (rec.results||[]).filter(Boolean).map(r=>{
-      const statusClass = r.allRight ? 'ok' : 'err';
-      const statusText = r.allRight ? '✓ ' + lang.correctShort : r.skipped ? lang.skipped : '✗ ' + lang.wrongShort;
-
-      // Build per-person answer breakdown for wrong/skipped items
-      let personDetail = '';
-      if(!r.allRight && !r.skipped && r.personResults){
-        const rows = r.personResults.filter(p=>p.correct).map(p=>{
-          const isOk = p.ok;
-          const userText = p.userAns || lang.emptyInput;
-          return `<div class="di-person-row ${isOk?'ok':'err'}">
-            <span class="di-person-label">${p.person}</span>
-            <span class="di-person-user ${isOk?'':'wrong'}">${userText}</span>
-            ${!isOk ? `<span class="di-person-correct">→ ${p.correct}</span>` : ''}
-          </div>`;
-        }).join('');
-        if(rows) personDetail = `<div class="di-person-list">${rows}</div>`;
-      }
-
-      return `<div class="detail-item" style="flex-direction:column;align-items:flex-start;gap:4px;padding:6px 0">
-        <div style="display:flex;justify-content:space-between;width:100%">
-          <span class="di-info">${r.verb} · ${r.tense}</span>
-          <span class="di-res ${statusClass}">${statusText}</span>
-        </div>
-        ${personDetail}
-      </div>`;
-    }).join('');
-
-    return `<div class="hist-card">
+    const tenseStr = (rec.tenses||[]).map(t=>TENSE_SHORT[t]||t).join('、');
+    return `<div class="hist-card" onclick="toggleDetail(${idx})">
       <div class="hist-top">
-        <div onclick="toggleDetail(${idx})" style="flex:1">
+        <div>
           <div style="font-weight:500;font-size:14px">${rec.date}</div>
-          <div class="hist-detail">${modeStr && modeStr + ' · '}${tenseStr} · ${rec.total} ${lang.questions}</div>
+          <div class="hist-detail">${tenseStr} · ${rec.total} 题</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="hist-score"><span style="font-size:12px;color:var(--muted);font-weight:400">${durationStr && durationStr + ' · '}</span>${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
-          <button class="hist-delete" onclick="deleteHistory(${idx});event.stopPropagation()">${lang.delete}</button>
-        </div>
+        <div class="hist-score">${pct}%<span style="font-size:12px;color:var(--muted);font-weight:400"> ${rec.correct}/${rec.total}</span></div>
       </div>
-      <div class="detail-panel" id="det-${idx}">${detailRows}</div>
+      <div class="detail-panel" id="det-${idx}">
+        ${(rec.results||[]).filter(Boolean).map(r=>`
+          <div class="detail-item">
+            <span class="di-info">${r.verb} · ${r.tense}</span>
+            <span class="di-res ${r.allRight?'ok':'err'}">${r.allRight?'✓ 全对':r.skipped?'跳过':'✗ 出错'}</span>
+          </div>`).join('')}
+      </div>
     </div>`;
   }).join('');
 }
@@ -816,17 +361,6 @@ function toggleDetail(idx){
   el.classList.toggle('open');
 }
 
-function deleteHistory(idx){
-  const history = JSON.parse(localStorage.getItem('frVerb_history')||'[]');
-  history.splice(idx, 1);
-  localStorage.setItem('frVerb_history', JSON.stringify(history));
-  historyDirty = true;
-  renderHistory();
-  // Re-render mistake book only if it's currently visible
-  if(document.getElementById('sub-mistakes').style.display !== 'none') renderMistakeBook();
-  showToast('已删除');
-}
-
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -834,368 +368,5 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2000);
 }
 
-// Override showToast for localized messages
-const originalShowToast = showToast;
-showToast = function(msg){
-  const localized = {
-    '已保存！': lang.saved,
-    '已删除': lang.deleted,
-    '请至少选择一个时态！': lang.noTense,
-    '全部正确！': lang.allCorrect,
-    '时间到！': lang.timeUp,
-    '已自动保存 ✓': lang.autoSaved
-  };
-  originalShowToast(localized[msg] || msg);
-};
-
-function toggleTheme(){
-  const html = document.documentElement;
-  const btn = document.getElementById('theme-toggle');
-  const current = html.getAttribute('data-theme');
-  
-  if(current === 'dark'){
-    html.setAttribute('data-theme', 'light');
-    btn.textContent = '○';
-    localStorage.setItem('frVerb_theme', 'light');
-  } else {
-    html.setAttribute('data-theme', 'dark');
-    btn.textContent = '●';
-    localStorage.setItem('frVerb_theme', 'dark');
-  }
-}
-
-const LANGS = {
-  zh: {
-    subtitle: '动词变位练习',
-    practice: '练习',
-    history: '历史记录',
-    count: '题目数量',
-    tense: '选择时态',
-    verb: '选择动词',
-    selectAll: '全选/取消',
-    mode: '练习模式',
-    modeRandom: '随机',
-    modeTimed: '限时',
-    timeLimit: '每题限时：',
-    start: '开始练习 →',
-    check: '核对答案',
-    skip: '跳过 →',
-    next: '下一题',
-    result: '查看结果',
-    mistakes: '错题本',
-    records: '练习记录',
-    emptyMistakes: '暂无错题记录。完成练习并保存后，错题将在此显示。',
-    emptyHistory: '暂无练习记录',
-    todo: '待复习',
-    learning: '加强中',
-    mastered: '已掌握',
-    practicePending: '练习待复习',
-    savePractice: '保存练习',
-    practiceAgain: '再练一次',
-    retryMistakes: '练本次错题',
-    questions: '题',
-    questionsTotal: '共',
-    correct: '全对',
-    wrong: '出错',
-    correctRate: '正确率',
-    perfect: '满分！完美无缺！',
-    great: '掌握得很好，继续保持！',
-    ok: '还不错，还有提升空间。',
-    low: '加油！多练几遍就好了。',
-    saved: '已保存！',
-    deleted: '已删除',
-    noTense: '请至少选择一个时态！',
-    allCorrect: '全部正确！',
-    timeUp: '时间到！',
-    autoSaved: '已自动保存 ✓',
-    expandVerbs: '展开动词列表',
-    collapseVerbs: '收起动词列表',
-    seconds: '秒',
-    delete: '删除',
-    correctShort: '全对',
-    wrongShort: '出错',
-    skipped: '跳过',
-    emptyInput: '（空）'
-  },
-  en: {
-    subtitle: 'Verb Conjugation Practice',
-    practice: 'Practice',
-    history: 'History',
-    count: 'Number of questions',
-    tense: 'Select tenses',
-    verb: 'Select verbs',
-    selectAll: 'Select all',
-    mode: 'Practice mode',
-    modeRandom: 'Random',
-    modeTimed: 'Timed',
-    timeLimit: 'Time per question:',
-    start: 'Start practice →',
-    check: 'Check answers',
-    skip: 'Skip →',
-    next: 'Next',
-    result: 'View results',
-    mistakes: 'Mistakes',
-    records: 'Records',
-    emptyMistakes: 'No mistake records yet. Complete practice and save to see mistakes here.',
-    emptyHistory: 'No practice records',
-    todo: 'To review',
-    learning: 'Learning',
-    mastered: 'Mastered',
-    practicePending: 'Practice pending',
-    savePractice: 'Save practice',
-    practiceAgain: 'Practice again',
-    retryMistakes: 'Retry mistakes',
-    questions: 'questions',
-    questionsTotal: 'of',
-    correct: 'Correct',
-    wrong: 'Wrong',
-    correctRate: 'Accuracy',
-    perfect: 'Perfect! Flawless!',
-    great: 'Well done, keep it up!',
-    ok: 'Not bad, room for improvement.',
-    low: 'Keep going! Practice makes perfect.',
-    saved: 'Saved!',
-    deleted: 'Deleted',
-    noTense: 'Please select at least one tense!',
-    allCorrect: 'All correct!',
-    timeUp: 'Time up!',
-    autoSaved: 'Auto saved ✓',
-    expandVerbs: 'Expand verbs',
-    collapseVerbs: 'Collapse verbs',
-    seconds: 's',
-    delete: 'Delete',
-    correctShort: 'Correct',
-    wrongShort: 'Wrong',
-    skipped: 'Skipped',
-    emptyInput: '(empty)'
-  },
-  fr: {
-    subtitle: 'Entraînement aux conjugaisons',
-    practice: 'Entraînement',
-    history: 'Historique',
-    count: 'Nombre de questions',
-    tense: 'Choisir les temps',
-    verb: 'Choisir les verbes',
-    selectAll: 'Tout sélectionner',
-    mode: 'Mode d\'entraînement',
-    modeRandom: 'Aléatoire',
-    modeTimed: 'Chronométré',
-    timeLimit: 'Temps par question :',
-    start: 'Commencer →',
-    check: 'Vérifier les réponses',
-    skip: 'Passer →',
-    next: 'Suivant',
-    result: 'Voir les résultats',
-    mistakes: 'Erreurs',
-    records: 'Enregistrements',
-    emptyMistakes: 'Aucun enregistrement d\'erreur pour le moment. Complétez l\'entraînement et enregistrez pour voir les erreurs ici.',
-    emptyHistory: 'Aucun enregistrement',
-    todo: 'À réviser',
-    learning: 'En cours',
-    mastered: 'Maîtrisé',
-    practicePending: 'Entraîner les erreurs',
-    savePractice: 'Enregistrer',
-    practiceAgain: 'Réessayer',
-    retryMistakes: 'Réentraîner les erreurs',
-    questions: 'questions',
-    questionsTotal: 'sur',
-    correct: 'Correctes',
-    wrong: 'Erreurs',
-    correctRate: 'Précision',
-    perfect: 'Parfait ! Impeccable !',
-    great: 'Très bien, continuez !',
-    ok: 'Pas mal, encore des progrès à faire.',
-    low: 'Courage ! Ça vient avec la pratique.',
-    saved: 'Enregistré !',
-    deleted: 'Supprimé',
-    noTense: 'Veuillez sélectionner au moins un temps !',
-    allCorrect: 'Toutes correctes !',
-    timeUp: 'Temps écoulé !',
-    autoSaved: 'Enregistré automatiquement ✓',
-    expandVerbs: 'Déplier les verbes',
-    collapseVerbs: 'Replier les verbes',
-    seconds: 's',
-    delete: 'Supprimer',
-    correctShort: 'Correcte',
-    wrongShort: 'Erreur',
-    skipped: 'Passé',
-    emptyInput: '(vide)'
-  }
-};
-
-let currentLang = 'zh';
-let lang = LANGS[currentLang];
-
-function cycleLang(){
-  const langs = ['zh', 'en', 'fr'];
-  const idx = langs.indexOf(currentLang);
-  const nextIdx = (idx + 1) % langs.length;
-  setLang(langs[nextIdx]);
-}
-
-function updateUI(){
-  document.getElementById('subtitle').textContent = lang.subtitle;
-  document.getElementById('tab-practice-btn').textContent = lang.practice;
-  document.getElementById('tab-history-btn').textContent = lang.history;
-  document.getElementById('label-count').textContent = lang.count;
-  document.getElementById('label-tense').textContent = lang.tense;
-  document.getElementById('label-verb').textContent = lang.verb;
-  document.getElementById('btn-select-all').textContent = lang.selectAll;
-  document.getElementById('label-mode').textContent = lang.mode;
-  document.getElementById('mode-random').textContent = lang.modeRandom;
-  document.getElementById('mode-timed').textContent = lang.modeTimed;
-  document.getElementById('label-time-limit').textContent = lang.timeLimit;
-  document.getElementById('btn-start').textContent = lang.start;
-  if(document.getElementById('btn-check')) document.getElementById('btn-check').textContent = lang.check;
-  if(document.getElementById('btn-skip')) document.getElementById('btn-skip').textContent = lang.skip;
-  if(document.getElementById('time-unit')) document.getElementById('time-unit').textContent = lang.seconds;
-  if(document.getElementById('btn-next')) document.getElementById('btn-next').textContent = lang.next;
-  if(document.getElementById('btn-result')) document.getElementById('btn-result').textContent = lang.result;
-  document.getElementById('subtab-mistakes').textContent = lang.mistakes;
-  document.getElementById('subtab-records').textContent = lang.records;
-  if(document.getElementById('empty-mistakes')) document.getElementById('empty-mistakes').textContent = lang.emptyMistakes;
-  if(document.getElementById('empty-history')) document.getElementById('empty-history').textContent = lang.emptyHistory;
-  
-  // Update verb summary
-  const summary = document.getElementById('verb-summary');
-  if(summary){
-    const details = document.querySelector('.verb-details');
-    const text = details?.open ? lang.collapseVerbs : lang.expandVerbs + ` (${activeVerbs.size}/${Object.keys(DB).length})`;
-    summary.textContent = text;
-  }
-  
-  // Update timer text
-  const timerText = document.getElementById('timer-text');
-  if(timerText && timerState.remaining > 0){
-    timerText.textContent = Math.ceil(timerState.remaining/1000) + lang.seconds;
-  }
-}
-
-function setLang(newLang){
-  currentLang = newLang;
-  lang = LANGS[newLang];
-  localStorage.setItem('frVerb_lang', newLang);
-  
-  // Update language toggle button
-  const btn = document.getElementById('lang-toggle');
-  const langCodes = {zh:'中', en:'EN', fr:'FR'};
-  btn.textContent = langCodes[newLang];
-  
-  updateUI();
-  
-  // Re-render mistake book if visible
-  if(document.getElementById('sub-mistakes').style.display !== 'none') renderMistakeBook();
-  
-  // Re-render history if visible
-  if(document.getElementById('sub-records').style.display !== 'none') renderHistory();
-}
-
-// Initialize language on load
-(function(){
-  const saved = localStorage.getItem('frVerb_lang') || 'zh';
-  setLang(saved);
-})();
-
-// Initialize theme on load
-(function(){
-  const saved = localStorage.getItem('frVerb_theme');
-  const html = document.documentElement;
-  const btn = document.getElementById('theme-toggle');
-  
-  if(saved){
-    html.setAttribute('data-theme', saved);
-    btn.textContent = saved === 'dark' ? '●' : '○';
-  } else if(window.matchMedia('(prefers-color-scheme: dark)').matches){
-    html.setAttribute('data-theme', 'dark');
-    btn.textContent = '●';
-  }
-})();
-
-// ── Keyboard: navigation + Esc accent-bar ─────────────────────────────────────
-let accentMode = false;
-let accentIndex = 0;
-
-function setAccentMode(on){
-  accentMode = on;
-  const btns = document.querySelectorAll('.accent-btn');
-  if(!on){
-    btns.forEach(b=>b.classList.remove('selected'));
-    accentIndex = 0;
-    return;
-  }
-  accentIndex = 0;
-  btns.forEach((b,i)=>b.classList.toggle('selected', i===0));
-  btns[0]?.scrollIntoView({block:'nearest'});
-}
-
-function insertAccentChar(){
-  const btns = document.querySelectorAll('.accent-btn');
-  const char = btns[accentIndex]?.dataset.accent;
-  if(!char) return;
-  const active = document.activeElement;
-  if(active && (active.classList.contains('person-input')||active.classList.contains('participle-input'))){
-    const s = active.selectionStart, e = active.selectionEnd;
-    active.value = active.value.slice(0,s) + char + active.value.slice(e);
-    active.selectionStart = active.selectionEnd = s + char.length;
-  }
-  setAccentMode(false);
-}
-
-document.addEventListener('keydown', e=>{
-  const inInput = document.activeElement?.classList.contains('person-input') ||
-                  document.activeElement?.classList.contains('participle-input');
-
-  // ── Accent mode (Esc to toggle, arrows to move, Enter to insert) ──
-  if(accentMode){
-    if(e.key==='Escape'){e.preventDefault();setAccentMode(false);return;}
-    if(e.key==='Enter'){e.preventDefault();insertAccentChar();return;}
-    const btns = document.querySelectorAll('.accent-btn');
-    const total = btns.length;
-    if(e.key==='ArrowRight'){e.preventDefault();accentIndex=Math.min(accentIndex+1,total-1);}
-    else if(e.key==='ArrowLeft'){e.preventDefault();accentIndex=Math.max(accentIndex-1,0);}
-    else if(e.key==='ArrowDown'){e.preventDefault();accentIndex=Math.min(accentIndex+7,total-1);}
-    else if(e.key==='ArrowUp'){e.preventDefault();accentIndex=Math.max(accentIndex-7,0);}
-    btns.forEach((b,i)=>b.classList.toggle('selected',i===accentIndex));
-    btns[accentIndex]?.scrollIntoView({block:'nearest'});
-    return;
-  }
-
-  // ── Esc: enter accent mode (only when in input) ──
-  if(e.key==='Escape' && inInput){
-    const bar = document.getElementById('accent-bar');
-    if(bar){e.preventDefault();setAccentMode(true);}
-    return;
-  }
-
-  // ── Enter: check or advance (works both in input and on buttons) ──
-  if(e.key==='Enter'){
-    e.preventDefault();
-    if(!session.checked){
-      checkAnswers();
-    } else {
-      nextQuestion();
-    }
-    return;
-  }
-});
-
-document.addEventListener('mousedown', e => {
-  const btn = e.target.closest('.accent-btn');
-  if (btn) {
-    e.preventDefault();
-    const active = document.querySelector('.person-input:focus, .participle-input:focus') ||
-                   document.querySelector('.person-input:not([disabled]), .participle-input:not([disabled])');
-    if (active) {
-      const c = btn.dataset.accent;
-      const s = active.selectionStart, e2 = active.selectionEnd;
-      active.value = active.value.slice(0, s) + c + active.value.slice(e2);
-      active.selectionStart = active.selectionEnd = s + c.length;
-      active.focus();
-    }
-  }
-});
-
 initChips();
-initVerbs();
-initModes();
 </script>
